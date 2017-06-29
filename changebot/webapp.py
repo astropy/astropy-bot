@@ -39,7 +39,7 @@ def hook():
 
     data = json.loads(request.data)
 
-    repo = gh.get_repo(data['respository']['full_name'])
+    repo = gh.get_repo(data['repository']['full_name'])
 
     pr = gh.get_pull(int(data['number']))
 
