@@ -15,7 +15,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app)
 app.secret_key = os.environ['FLASK_SECRET_KEY']
 app.config["GITHUB_OAUTH_CLIENT_ID"] = os.environ["GITHUB_OAUTH_CLIENT_ID"]
 app.config["GITHUB_OAUTH_CLIENT_SECRET"] = os.environ["GITHUB_OAUTH_CLIENT_SECRET"]
-github_bp = make_github_blueprint(scope='repo:status,write:repo_hook')
+github_bp = make_github_blueprint(scope='repo,write:repo_hook')
 app.register_blueprint(github_bp, url_prefix="/login")
 
 
