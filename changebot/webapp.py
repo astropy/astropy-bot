@@ -1,7 +1,11 @@
 import os
 
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for, request
+
 from flask_dance.contrib.github import github, make_github_blueprint
+
+from github import Github
+from github.GithubException import GithubException
 
 from werkzeug.contrib.fixers import ProxyFix
 
@@ -10,7 +14,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app)
 app.secret_key = os.environ['FLASK_SECRET_KEY']
 app.config["GITHUB_OAUTH_CLIENT_ID"] = os.environ["GITHUB_OAUTH_CLIENT_ID"]
 app.config["GITHUB_OAUTH_CLIENT_SECRET"] = os.environ["GITHUB_OAUTH_CLIENT_SECRET"]
-github_bp = make_github_blueprint(scope='write:repo_hook,repo:status')
+github_bp = make_github_blueprint(scope='repo:status,write:repo_hook')
 app.register_blueprint(github_bp, url_prefix="/login")
 
 
@@ -21,6 +25,68 @@ def index():
     resp = github.get("/user")
     assert resp.ok
     return "You are @{login} on GitHub".format(login=resp.json()["login"])
+
+
+@app.route("/hook")
+def hook():
+
+    if not github.authorized:
+        return redirect(url_for("github.login"))
+
+    gh = Github(client_id=app.config["GITHUB_OAUTH_CLIENT_ID"],
+                client_secret=app.config["GITHUB_OAUTH_CLIENT_SECRET"])
+
+    return str(request.data)
+
+
+@app.route("/enable/<owner>/<repository>")
+def enable(owner, repository):
+
+    if not github.authorized:
+        return redirect(url_for("github.login"))
+
+    token = github.token['access_token']
+
+    gh = Github(token)
+    repo = gh.get_repo('{owner}/{repository}'.format(owner=owner, repository=repository))
+
+    hook_config = {'url': request.url_root + '/hook',
+                   'content_type': 'json'}
+
+    try:
+        repo.create_hook('web', hook_config,
+                         events=['pull_request', 'push', 'issues'])
+    except GithubException as exc:
+        for error in exc.data['errors']:
+            if 'Hook already exists' in error['message']:
+                return "Hook already enabled for {owner}/{repository}".format(owner=owner, repository=repository)
+        raise
+
+    return "Hook enabled for {owner}/{repository}".format(owner=owner, repository=repository)
+
+
+@app.route("/disable/<owner>/<repository>")
+def disable(owner, repository):
+
+    if not github.authorized:
+        return redirect(url_for("github.login"))
+
+    token = github.token['access_token']
+
+    gh = Github(token)
+    repo = gh.get_repo('{owner}/{repository}'.format(owner=owner, repository=repository))
+
+    removed = False
+    for hook in repo.get_hooks():
+        if hook.config['url'] == request.url_root + '/hook':
+            hook.delete()
+            removed = True
+
+    if removed:
+        return "Hook disabled for {owner}/{repository}".format(owner=owner, repository=repository)
+    else:
+        return "No hook found for {owner}/{repository}".format(owner=owner, repository=repository)
+
 
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.
