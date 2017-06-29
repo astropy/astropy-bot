@@ -30,9 +30,6 @@ def index():
 @app.route("/hook", methods=['POST'])
 def hook():
 
-    if not github.authorized:
-        return redirect(url_for("github.login"))
-
     gh = Github(client_id=app.config["GITHUB_OAUTH_CLIENT_ID"],
                 client_secret=app.config["GITHUB_OAUTH_CLIENT_SECRET"])
 
@@ -50,7 +47,7 @@ def enable(owner, repository):
     gh = Github(token)
     repo = gh.get_repo('{owner}/{repository}'.format(owner=owner, repository=repository))
 
-    hook_config = {'url': request.url_root + '/hook',
+    hook_config = {'url': request.url_root + 'hook',
                    'content_type': 'json'}
 
     try:
