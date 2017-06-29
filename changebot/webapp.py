@@ -24,8 +24,7 @@ def index():
     if not github.authorized:
         return redirect(url_for("github.login"))
     resp = github.get("/user")
-    return str(resp.json())
-    # return "You are @{login} on GitHub".format(login=resp.json()["login"])
+    return "You are @{login} on GitHub".format(login=resp.json()["login"])
 
 
 @app.route("/hook", methods=['POST'])
