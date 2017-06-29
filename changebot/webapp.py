@@ -1,4 +1,5 @@
 import os
+import json
 
 from flask import Flask, redirect, url_for, request
 
@@ -36,9 +37,11 @@ def hook():
     gh = Github(client_id=app.config["GITHUB_OAUTH_CLIENT_ID"],
                 client_secret=app.config["GITHUB_OAUTH_CLIENT_SECRET"])
 
-    repo = gh.get_repo(request.data['respository']['full_name'])
+    data = json.loads(request.data)
 
-    pr = gh.get_pull(int(request.data['number']))
+    repo = gh.get_repo(data['respository']['full_name'])
+
+    pr = gh.get_pull(int(data['number']))
 
     commit = pr.get_commit(repo.head)
 
