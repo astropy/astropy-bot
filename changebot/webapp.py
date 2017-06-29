@@ -30,8 +30,22 @@ def index():
 @app.route("/hook", methods=['POST'])
 def hook():
 
+    if request.headers['X-GitHub-Event'] != 'pull_request':
+        return "Not a pull_request event"
+
     gh = Github(client_id=app.config["GITHUB_OAUTH_CLIENT_ID"],
                 client_secret=app.config["GITHUB_OAUTH_CLIENT_SECRET"])
+
+    repo = gh.get_repo(request.data['respository']['full_name'])
+
+    pr = gh.get_pull(int(request.data['number']))
+
+    commit = pr.get_commit(repo.head)
+
+    # can also set target_url
+    commit.create_status('error',
+                         description='Your changelog sucks',
+                         context='astrochangebot')
 
     return str(request.data)
 
