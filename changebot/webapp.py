@@ -43,7 +43,7 @@ def hook():
 
     pr = repo.get_pull(int(data['number']))
 
-    commit = pr.get_commit(repo.head)
+    commit = repo.get_commit(repo.head)
 
     # can also set target_url
     commit.create_status('error',
