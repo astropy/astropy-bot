@@ -41,7 +41,7 @@ def hook():
 
     repo = gh.get_repo(data['repository']['full_name'])
 
-    pr = gh.get_pull(int(data['number']))
+    pr = repo.get_pull(int(data['number']))
 
     commit = pr.get_commit(repo.head)
 
