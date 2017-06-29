@@ -27,7 +27,7 @@ def index():
     return "You are @{login} on GitHub".format(login=resp.json()["login"])
 
 
-@app.route("/hook")
+@app.route("/hook", methods=['POST'])
 def hook():
 
     if not github.authorized:
