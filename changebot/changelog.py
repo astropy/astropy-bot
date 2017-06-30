@@ -2,6 +2,10 @@ import re
 import base64
 import requests
 
+from changebot.github_auth import github_request_headers
+
+__all__ = ['check_changelog_consistency']
+
 
 BLOCK_PATTERN = re.compile('\[#.+\]', flags=re.DOTALL)
 ISSUE_PATTERN = re.compile('#[0-9]+')
@@ -41,7 +45,7 @@ def find_prs_in_changelog_by_section(content):
     return changelog_prs
 
 
-def check_changelog_consistency(webhook_payload, headers):
+def check_changelog_consistency(webhook_payload):
 
     # Get pull request number
     pull_request = webhook_payload['number']
@@ -54,6 +58,7 @@ def check_changelog_consistency(webhook_payload, headers):
     data['ref'] = data['head']['ref']
 
     # Get the contents of the changelog file
+    headers = github_request_headers()
     response = requests.get(url_changes, params=data, headers=headers)
     changelog_base64 = response.json()['content']
 

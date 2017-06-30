@@ -1,2 +1,2 @@
-web: python -m changebot.webapp
+web: python -m run
 
