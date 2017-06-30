@@ -86,7 +86,8 @@ def review_changelog(pull_request, changelog, milestone, labels):
     changelog_entry = pull_request in sections
     if changelog_entry:
         if not milestone.startswith(sections[pull_request]):
-            issues.append("Changelog entry section ({0}) inconsistent with milestone ({1})".format(sections[pull_request], milestone))
+            issues.append("Changelog entry section ({0}) inconsistent "
+                          "with milestone ({1})".format(sections[pull_request], milestone))
 
     if 'no-changelog-entry-needed' in labels:
         if changelog_entry:
@@ -96,20 +97,25 @@ def review_changelog(pull_request, changelog, milestone, labels):
             issues.append("Changelog entry present but **Affects-dev** label set")
     else:
         if not changelog_entry:
-            issues.append("Changelog entry not present (or pull request number missing) and neither the **Affects-dev** nor the **no-changelog-entry-needed** label are set")
+            issues.append("Changelog entry not present (or pull request number "
+                          "missing) and neither the **Affects-dev** nor the "
+                          "**no-changelog-entry-needed** label are set")
 
     if len(issues) > 0:
 
-        message = "@{0} - thanks for merging this! However, I noticed the following issues with this pull request:\n\n".format(merged_by)
+        message = ("Hi there :wave: - I noticed the following issues with this "
+                   "pull request:\n\n")
         for issue in issues:
             message += "* {0}\n".format(issue)
 
         message += "\nWould it be possible to fix these? Thanks! \n"
 
         if len(issues) == 1:
-            message = message.replace('issues with', 'issue with').replace('fix these', 'fix this')
+            message = (message.replace('issues with', 'issue with')
+                       .replace('fix these', 'fix this'))
 
-        message += "\n*If you believe the above to be incorrect (which I - @astrobot - very much doubt) you can ping @astrofrog*\n"
+        message += ("\n*If you believe the above to be incorrect, you can ping "
+                    "@astrofrog*\n")
 
         return False, message
 
