@@ -51,14 +51,14 @@ def check_changelog_consistency(webhook_payload):
     pull_request = webhook_payload['number']
 
     # Figure out the URL to the changelog file for the PR head
-    url_changes = webhook_payload['head']['repo']['contents_url'].replace('{+path}', 'CHANGES.rst')
+    url_changes = webhook_payload['pull_request']['head']['repo']['contents_url'].replace('{+path}', 'CHANGES.rst')
 
     # Make sure we get the changes from the same branch.
     data = {}
-    data['ref'] = data['head']['ref']
+    data['ref'] = webhook_payload['pull_request']['head']['ref']
 
     # Get the contents of the changelog file
-    headers = github_request_headers()
+    headers = github_request_headers(webhook_payload['installation'])
     response = requests.get(url_changes, params=data, headers=headers)
     changelog_base64 = response.json()['content']
 
