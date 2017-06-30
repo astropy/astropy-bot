@@ -43,7 +43,7 @@ def hook():
         submit_review(payload, 'accept', message)
         set_status(payload, 'pass', 'All checks passed', 'changebot')
     else:
-        submit_review(payload, 'reject', message)
+        submit_review(payload, 'request_changes', message)
         set_status(payload, 'error', 'There were failures in checks - see '
                                      'comments by @astrochangebot above',
                                      'changebot')
