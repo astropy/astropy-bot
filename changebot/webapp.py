@@ -6,7 +6,7 @@ from flask import Flask, request
 from werkzeug.contrib.fixers import ProxyFix
 
 from changebot.changelog import check_changelog_consistency
-from changebot.github_api import submit_review, set_status
+from changebot.github_api import submit_review, set_status, fill_pull_request_from_issue
 
 
 app = Flask('astrochangebot')
@@ -28,11 +28,18 @@ def installation_authorized():
 @app.route("/hook", methods=['POST'])
 def hook():
 
-    if request.headers['X-GitHub-Event'] != 'pull_request':
-        return "Not a pull_request event"
+    event = request.headers['X-GitHub-Event']
+
+    if event not in ('pull_request', 'issues'):
+        return "Not a pull_request or issues event"
 
     # Parse the JSON sent by GitHub
     payload = json.loads(request.data)
+
+    if 'issue' in payload and 'pull_request' not in payload:
+        if 'pull_request' not in payload['issue']:
+            return
+        fill_pull_request_from_issue(payload)
 
     # Run checks
     # TODO: in future, make this more generic so that any checks can be run.
