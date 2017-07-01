@@ -36,6 +36,9 @@ def hook():
     # Parse the JSON sent by GitHub
     payload = json.loads(request.data)
 
+    if 'installation' not in payload:
+        return "No installation key found in payload: " + request.data.decode('utf-8')
+
     if 'issue' in payload and 'pull_request' not in payload:
         if 'pull_request' not in payload['issue']:
             return
