@@ -64,11 +64,11 @@ def hook():
 
     if success:
         pr_handler.submit_review('approve', message)
-        pr_handler.set_status('pass', 'All checks passed', 'changebot')
+        pr_handler.set_status('success', 'All checks passed', 'changebot')
     else:
         pr_handler.submit_review('request_changes', message)
-        pr_handler.set_status('error', 'There were failures in checks - see '
-                                     'comments by @astrochangebot above',
-                                     'changebot')
+        pr_handler.set_status('failure', 'There were failures in checks - see '
+                                         'comments by @astrochangebot above',
+                                         'changebot')
 
     return message
