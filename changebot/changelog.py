@@ -45,34 +45,12 @@ def find_prs_in_changelog_by_section(content):
     return changelog_prs
 
 
-def check_changelog_consistency(webhook_payload):
+def check_changelog_consistency(repo_handler, pr_handler):
 
-    # Get pull request number
-    pull_request = webhook_payload['number']
+    changelog = repo_handler.get_file_contents('CHANGES.rst')
 
-    # Figure out the URL to the changelog file for the PR head
-    url_changes = webhook_payload['pull_request']['head']['repo']['contents_url'].replace('{+path}', 'CHANGES.rst')
-
-    # Make sure we get the changes from the same branch.
-    data = {}
-    data['ref'] = webhook_payload['pull_request']['head']['ref']
-
-    # Get the contents of the changelog file
-    headers = github_request_headers(webhook_payload['installation']['id'])
-    response = requests.get(url_changes, params=data, headers=headers)
-    changelog_base64 = response.json()['content']
-
-    # Decode from base64
-    changelog = base64.b64decode(changelog_base64).decode()
-
-    # Next, we need to get the milestone of the PR
-    milestone = webhook_payload['pull_request']['milestone']['title']
-
-    # Finally, we need to get the labels
-    response = requests.get(webhook_payload['pull_request']['milestone']['labels_url'], headers=headers)
-    labels = [label['name'] for label in response.json()]
-
-    return review_changelog(pull_request, changelog, milestone, labels)
+    return review_changelog(pr_handler.number, changelog,
+                            pr_handler.milestone, pr_handler.labels)
 
 
 def review_changelog(pull_request, changelog, milestone, labels):

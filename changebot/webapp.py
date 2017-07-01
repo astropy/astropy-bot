@@ -6,7 +6,7 @@ from flask import Flask, request
 from werkzeug.contrib.fixers import ProxyFix
 
 from changebot.changelog import check_changelog_consistency
-from changebot.github_api import submit_review, set_status, fill_pull_request_from_issue
+from changebot.github_api import RepoHandler, PullRequestHandler
 
 
 app = Flask('astrochangebot')
@@ -37,24 +37,37 @@ def hook():
     payload = json.loads(request.data)
 
     if 'installation' not in payload:
-        return "No installation key found in payload: " + request.data.decode('utf-8')
+        return "No installation key found in payload"
+    else:
+        installation = payload['installation']['id']
 
-    if 'issue' in payload and 'pull_request' not in payload:
-        if 'pull_request' not in payload['issue']:
-            return
-        fill_pull_request_from_issue(payload)
+    if event == 'pull_request':
+        number = payload['pull_request']['number']
+    elif event == 'issues':
+        number = payload['issue']['number']
+    else:
+        return
+
+    repository = payload['repository']['full_name']
+
+    # TODO: cache handlers and invalidate the internal cache of the handlers on
+    # certain events.
+    pr_handler = PullRequestHandler(repository, number, installation)
+
+    branch = pr_handler.head_branch
+    repo_handler = RepoHandler(repository, branch, installation)
 
     # Run checks
     # TODO: in future, make this more generic so that any checks can be run.
     # we could have a registry of checks and concatenate the responses
-    success, message = check_changelog_consistency(payload)
+    success, message = check_changelog_consistency(repo_handler, pr_handler)
 
     if success:
-        submit_review(payload, 'accept', message)
-        set_status(payload, 'pass', 'All checks passed', 'changebot')
+        pr_handler.submit_review('accept', message)
+        pr_handler.set_status('pass', 'All checks passed', 'changebot')
     else:
-        submit_review(payload, 'request_changes', message)
-        set_status(payload, 'error', 'There were failures in checks - see '
+        pr_handler.submit_review('request_changes', message)
+        pr_handler.set_status('error', 'There were failures in checks - see '
                                      'comments by @astrochangebot above',
                                      'changebot')
 
