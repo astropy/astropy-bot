@@ -63,7 +63,7 @@ def hook():
     success, message = check_changelog_consistency(repo_handler, pr_handler)
 
     if success:
-        pr_handler.submit_review('accept', message)
+        pr_handler.submit_review('approve', message)
         pr_handler.set_status('pass', 'All checks passed', 'changebot')
     else:
         pr_handler.submit_review('request_changes', message)
