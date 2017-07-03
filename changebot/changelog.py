@@ -1,8 +1,4 @@
 import re
-import base64
-import requests
-
-from changebot.github_auth import github_request_headers
 
 __all__ = ['check_changelog_consistency']
 

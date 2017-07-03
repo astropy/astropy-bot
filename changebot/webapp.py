@@ -62,6 +62,8 @@ def hook():
     # we could have a registry of checks and concatenate the responses
     success, message = check_changelog_consistency(repo_handler, pr_handler)
 
+    # TODO: Only submit a review if the status changes
+
     if success:
         pr_handler.submit_review('approve', message)
         pr_handler.set_status('success', 'All checks passed', 'changebot')
