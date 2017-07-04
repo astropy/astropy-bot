@@ -44,10 +44,10 @@ def hook():
     # We only need to listen to certain kinds of events:
     if event == 'pull_request':
         if payload['action'] not in ('unlabeled', 'labeled', 'synchronize', 'opened'):
-            return 'Action ' + payload['action'] + ' does not require action'
+            return 'Action \'' + payload['action'] + '\' does not require action'
     elif event == 'issues':
         if payload['action'] not in ('milestoned', 'demilestoned'):
-            return 'Action ' + payload['action'] + ' does not require action'
+            return 'Action \'' + payload['action'] + '\' does not require action'
 
     if event == 'pull_request':
         number = payload['pull_request']['number']
@@ -92,7 +92,7 @@ def hook():
 
     if len(issues) > 0:
 
-        message = "I noticed the following issues with this pull request:\n\n"
+        message += "I noticed the following issues with this pull request:\n\n"
         for issue in issues:
             message += "* {0}\n".format(issue)
 
