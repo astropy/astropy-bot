@@ -84,7 +84,7 @@ def hook():
                    'bot that checks for '
                    'issues related to the changelog and making sure that this '
                    'pull request is milestoned and labelled correctly. If you '
-                   'don\'t understand any of the issues below (if there are any), '
+                   'don\'t understand the issues below (if there are any), '
                    'don\'t worry as '
                    'a friendly maintainer will be here soon to help :smiley:.\n\n')
     else:
@@ -109,7 +109,7 @@ def hook():
     pr_handler.submit_comment(message, comment_id=comment_id)
 
     if len(issues) == 0:
-        pr_handler.set_status('success', 'All checks passed', 'changebot')
+        pr_handler.set_status('success', 'All checks passed', 'astrobot-app')
     else:
         pr_handler.set_status('failure', 'There were failures in checks - see '
                                          'comments by @astrobot-app above',
