@@ -43,7 +43,7 @@ def hook():
 
     # We only need to listen to certain kinds of events:
     if event == 'pull_request':
-        if payload['action'] not in ('unlabeled', 'labeled', 'synchronize'):
+        if payload['action'] not in ('unlabeled', 'labeled', 'synchronize', 'opened'):
             return 'Action ' + payload['action'] + ' does not require action'
     elif event == 'issues':
         if payload['action'] not in ('milestoned', 'demilestoned'):
