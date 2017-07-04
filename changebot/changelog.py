@@ -62,7 +62,7 @@ def review_changelog(pull_request, changelog, milestone, labels):
     issues = []
 
     if not milestone:
-        issues.append("The milestone has not been set")
+        issues.append("The milestone has not been set (this can only be set by a maintainer)")
 
     sections = find_prs_in_changelog_by_section(changelog)
     changelog_entry = pull_request in sections
