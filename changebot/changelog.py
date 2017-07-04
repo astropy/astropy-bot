@@ -75,24 +75,4 @@ def review_changelog(pull_request, changelog, milestone, labels):
                           "missing) and neither the **Affects-dev** nor the "
                           "**no-changelog-entry-needed** label are set")
 
-    if len(issues) > 0:
-
-        message = ("Hi there :wave: - I noticed the following issues with this "
-                   "pull request:\n\n")
-        for issue in issues:
-            message += "* {0}\n".format(issue)
-
-        message += "\nWould it be possible to fix these? Thanks! \n"
-
-        if len(issues) == 1:
-            message = (message.replace('issues with', 'issue with')
-                       .replace('fix these', 'fix this'))
-
-        message += ("\n*If you believe the above to be incorrect, you can ping "
-                    "@astrofrog*\n")
-
-        return False, message
-
-    else:
-
-        return True, "All good!"
+    return issues

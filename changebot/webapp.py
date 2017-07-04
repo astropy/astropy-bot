@@ -9,7 +9,7 @@ from changebot.changelog import check_changelog_consistency
 from changebot.github_api import RepoHandler, PullRequestHandler
 
 
-app = Flask('astrochangebot')
+app = Flask('astrobot-app')
 app.wsgi_app = ProxyFix(app.wsgi_app)
 app.integration_id = int(os.environ['GITHUB_APP_INTEGRATION_ID'])
 app.private_key = os.environ['GITHUB_APP_PRIVATE_KEY']
@@ -41,6 +41,14 @@ def hook():
     else:
         installation = payload['installation']['id']
 
+    # We only need to listen to certain kinds of events:
+    if event == 'pull_request':
+        if payload['action'] not in ('unlabeled', 'labeled', 'synchronize'):
+            return 'Action ' + payload['action'] + ' does not require action'
+    elif event == 'issues':
+        if payload['action'] not in ('milestoned', 'demilestoned'):
+            return 'Action ' + payload['action'] + ' does not require action'
+
     if event == 'pull_request':
         number = payload['pull_request']['number']
     elif event == 'issues':
@@ -60,17 +68,51 @@ def hook():
     # Run checks
     # TODO: in future, make this more generic so that any checks can be run.
     # we could have a registry of checks and concatenate the responses
-    success, message = check_changelog_consistency(repo_handler, pr_handler)
+    issues = check_changelog_consistency(repo_handler, pr_handler)
 
-    # TODO: Only submit a review if the status changes
+    # Find previous comments by this app
+    comment_ids = pr_handler.find_comments('astrobot-app[bot]')
 
-    if success:
-        pr_handler.submit_review('approve', message)
+    if len(comment_ids) == 0:
+        comment_id = None
+    else:
+        comment_id = comment_ids[-1]
+    # Construct message
+
+    if comment_id is None:
+        message = (f'Hi there @{pr_handler.user} :wave: - I\'m just a friendly '
+                   'bot that checks for '
+                   'issues related to the changelog and making sure that this '
+                   'pull request is milestoned and labelled correctly. If you '
+                   'don\'t understand any of the issues below (if there are any), '
+                   'don\'t worry as '
+                   'a friendly maintainer will be here soon to help :smiley:.\n\n')
+    else:
+        message = f'Thanks for updating the pull request @{pr_handler.user}!\n\n'
+
+    if len(issues) > 0:
+
+        message = "I noticed the following issues with this pull request:\n\n"
+        for issue in issues:
+            message += "* {0}\n".format(issue)
+
+        message += "\nWould it be possible to fix these? Thanks! \n"
+
+        if len(issues) == 1:
+            message = (message.replace('issues with', 'issue with')
+                       .replace('fix these', 'fix this'))
+
+    else:
+
+        message += "Everything looks good from my point of view :smiley:"
+
+    pr_handler.submit_comment(message, comment_id=comment_id)
+
+    if len(issues) == 0:
         pr_handler.set_status('success', 'All checks passed', 'changebot')
     else:
-        pr_handler.submit_review('request_changes', message)
         pr_handler.set_status('failure', 'There were failures in checks - see '
-                                         'comments by @astrochangebot above',
+                                         'comments by @astrobot-app above',
                                          'changebot')
 
     return message
