@@ -9,7 +9,7 @@ from changebot.changelog import check_changelog_consistency
 from changebot.github_api import RepoHandler, PullRequestHandler
 
 
-app = Flask('astrobot-app')
+app = Flask('astropy-bot')
 app.wsgi_app = ProxyFix(app.wsgi_app)
 app.integration_id = int(os.environ['GITHUB_APP_INTEGRATION_ID'])
 app.private_key = os.environ['GITHUB_APP_PRIVATE_KEY']
@@ -71,7 +71,7 @@ def hook():
     issues = check_changelog_consistency(repo_handler, pr_handler)
 
     # Find previous comments by this app
-    comment_ids = pr_handler.find_comments('astrobot-app[bot]')
+    comment_ids = pr_handler.find_comments('astropy-bot[bot]')
 
     if len(comment_ids) == 0:
         comment_id = None
@@ -109,10 +109,10 @@ def hook():
     pr_handler.submit_comment(message, comment_id=comment_id)
 
     if len(issues) == 0:
-        pr_handler.set_status('success', 'All checks passed', 'astrobot-app')
+        pr_handler.set_status('success', 'All checks passed', 'astropy-bot')
     else:
         pr_handler.set_status('failure', 'There were failures in checks - see '
-                                         'comments by @astrobot-app above',
+                                         'comments by @astropy-bot above',
                                          'changebot')
 
     return message
