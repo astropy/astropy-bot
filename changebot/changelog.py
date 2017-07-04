@@ -3,7 +3,7 @@ import re
 __all__ = ['check_changelog_consistency']
 
 
-BLOCK_PATTERN = re.compile('\[#.+\]', flags=re.DOTALL)
+BLOCK_PATTERN = re.compile('[[(]#[0-9#, ]+[])]')
 ISSUE_PATTERN = re.compile('#[0-9]+')
 
 
