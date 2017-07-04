@@ -56,14 +56,12 @@ def hook():
     else:
         return
 
-    repository = payload['repository']['full_name']
-
     # TODO: cache handlers and invalidate the internal cache of the handlers on
     # certain events.
-    pr_handler = PullRequestHandler(repository, number, installation)
+    pr_handler = PullRequestHandler(payload['repository']['full_name'], number, installation)
 
-    branch = pr_handler.head_branch
-    repo_handler = RepoHandler(repository, branch, installation)
+    repo_handler = RepoHandler(pr_handler.head_repo_name,
+                               pr_handler.head_branch, installation)
 
     # Run checks
     # TODO: in future, make this more generic so that any checks can be run.
@@ -113,6 +111,6 @@ def hook():
     else:
         pr_handler.set_status('failure', 'There were failures in checks - see '
                                          'comments by @astropy-bot above',
-                                         'changebot')
+                                         'astropy-bot')
 
     return message
