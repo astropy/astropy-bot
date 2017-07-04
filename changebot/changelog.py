@@ -53,7 +53,7 @@ def review_changelog(pull_request, changelog, milestone, labels):
 
     issues = []
 
-    if milestone is None:
+    if not milestone:
         issues.append("The milestone has not been set")
 
     sections = find_prs_in_changelog_by_section(changelog)
