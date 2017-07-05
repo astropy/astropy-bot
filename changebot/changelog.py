@@ -74,10 +74,7 @@ def review_changelog(pull_request, changelog, milestone, labels):
     if 'no-changelog-entry-needed' in labels:
         if changelog_entry:
             issues.append("Changelog entry present but **no-changelog-entry-needed** label set")
-    elif 'Affects-dev' in labels:
-        if changelog_entry:
-            issues.append("Changelog entry present but **Affects-dev** label set")
-    else:
+    elif 'Affects-dev' not in labels:
         if not changelog_entry:
             issues.append("Changelog entry not present (or pull request number "
                           "missing) and neither the **Affects-dev** nor the "
