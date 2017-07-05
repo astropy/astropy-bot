@@ -77,7 +77,7 @@ def hook():
         comment_id = comment_ids[-1]
     # Construct message
 
-    message = (f'Hi there @{pr_handler.user} :wave: - thanks for the pull request!'
+    message = (f'Hi there @{pr_handler.user} :wave: - thanks for the pull request! '
                'I\'m just a friendly :robot: that checks for '
                'issues related to the changelog and making sure that this '
                'pull request is milestoned and labelled correctly. This is '
