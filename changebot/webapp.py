@@ -77,16 +77,13 @@ def hook():
         comment_id = comment_ids[-1]
     # Construct message
 
-    if comment_id is None:
-        message = (f'Hi there @{pr_handler.user} :wave: - I\'m just a friendly '
-                   'bot that checks for '
-                   'issues related to the changelog and making sure that this '
-                   'pull request is milestoned and labelled correctly. If you '
-                   'don\'t understand the issues below (if there are any), '
-                   'don\'t worry as '
-                   'a friendly maintainer will be here soon to help :smiley:.\n\n')
-    else:
-        message = f'Thanks for updating the pull request @{pr_handler.user}!\n\n'
+    message = (f'Hi there @{pr_handler.user} :wave: - thanks for the pull request!'
+               'I\'m just a friendly :robot: that checks for '
+               'issues related to the changelog and making sure that this '
+               'pull request is milestoned and labelled correctly. This is '
+               'mainly intended for the maintainers, so if you are not '
+               'a maintainer you can ignore this, and a maintainer will let '
+               'you know if any action is required on your part :smiley:.\n\n')
 
     if len(issues) > 0:
 
@@ -102,7 +99,7 @@ def hook():
 
     else:
 
-        message += "Everything looks good from my point of view :smiley:"
+        message += "Everything looks good from my point of view! :+1:"
 
     pr_handler.submit_comment(message, comment_id=comment_id)
 
