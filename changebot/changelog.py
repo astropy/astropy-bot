@@ -25,8 +25,12 @@ def find_prs_in_changelog_by_section(content):
     subcontent = ''
     previous = None
 
+    new_changelog_format = False
+    
     for line in content.splitlines():
-        if '-------' in line:
+        if '=======' in line:
+            new_changelog_format = True
+        if '=======' in line or (not new_changelog_format and '-------' in line):
             if version is not None:
                 for pr in find_prs_in_changelog(subcontent):
                     changelog_prs[int(pr)] = version
