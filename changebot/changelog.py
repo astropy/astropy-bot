@@ -71,7 +71,7 @@ def review_changelog(pull_request, changelog, milestone, labels):
     sections = find_prs_in_changelog_by_section(changelog)
     changelog_entry = pull_request in sections
     if changelog_entry:
-        if not milestone.startswith(sections[pull_request]):
+        if milestone and not milestone.startswith(sections[pull_request]):
             issues.append("Changelog entry section ({0}) inconsistent "
                           "with milestone ({1})".format(sections[pull_request], milestone))
 
