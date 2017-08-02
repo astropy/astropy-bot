@@ -97,6 +97,9 @@ def hook():
             message = (message.replace('issues with', 'issue with')
                        .replace('fix these', 'fix this'))
 
+    elif 'Work in progress' in pr_handler.labels:
+        message += ("I see this is a work in progress pull request. I'll "
+                    "carry out the checks once the PR is ready for review.")
     else:
 
         message += "Everything looks good from my point of view! :+1:"
