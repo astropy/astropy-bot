@@ -85,7 +85,11 @@ def hook():
                'a maintainer you can ignore this, and a maintainer will let '
                'you know if any action is required on your part :smiley:.\n\n')
 
-    if len(issues) > 0:
+    if 'Work in progress' in pr_handler.labels:
+        message += ("I see this is a work in progress pull request. I'll "
+                    "report back on the checks once the PR is ready for review.")
+
+    elif len(issues) > 0:
 
         message += "I noticed the following issues with this pull request:\n\n"
         for issue in issues:
@@ -97,9 +101,6 @@ def hook():
             message = (message.replace('issues with', 'issue with')
                        .replace('fix these', 'fix this'))
 
-    elif 'Work in progress' in pr_handler.labels:
-        message += ("I see this is a work in progress pull request. I'll "
-                    "carry out the checks once the PR is ready for review.")
     else:
 
         message += "Everything looks good from my point of view! :+1:"
