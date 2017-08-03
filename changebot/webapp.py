@@ -87,7 +87,7 @@ def hook():
 
     if 'Work in progress' in pr_handler.labels:
         message += ("I see this is a work in progress pull request. I'll "
-                    "carry out the checks once the PR is ready for review.")
+                    "report back on the checks once the PR is ready for review.")
 
     elif len(issues) > 0:
 
