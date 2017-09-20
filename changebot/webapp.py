@@ -7,7 +7,7 @@ from werkzeug.contrib.fixers import ProxyFix
 
 from changebot.changelog import check_changelog_consistency
 from changebot.github_api import RepoHandler, PullRequestHandler
-
+from changebot.issues import process_issues
 
 app = Flask('astropy-bot')
 app.wsgi_app = ProxyFix(app.wsgi_app)
@@ -23,6 +23,14 @@ def index():
 @app.route("/installation_authorized")
 def installation_authorized():
     return "Installation authorized"
+
+
+@app.route("/close_stale_issues", methods=['POST'])
+def close_stale_issues():
+    payload = json.loads(request.data)
+    if 'repository' not in payload:
+        return
+    process_issues(payload['repository'])
 
 
 @app.route("/hook", methods=['POST'])
@@ -88,7 +96,7 @@ def hook():
     if 'Work in progress' in pr_handler.labels:
         message += ("I see this is a work in progress pull request. I'll "
                     "report back on the checks once the PR is ready for review.")
-        
+
     elif 'Experimental' in pr_handler.labels:
         message += ("I see this is an experimental pull request. I'll "
                     "report back on the checks once the PR discussion in settled.")
