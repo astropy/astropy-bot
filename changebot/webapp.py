@@ -13,6 +13,7 @@ app = Flask('astropy-bot')
 app.wsgi_app = ProxyFix(app.wsgi_app)
 app.integration_id = int(os.environ['GITHUB_APP_INTEGRATION_ID'])
 app.private_key = os.environ['GITHUB_APP_PRIVATE_KEY']
+app.cron_token = os.environ['CRON_TOKEN']
 
 
 @app.route("/")
@@ -28,9 +29,12 @@ def installation_authorized():
 @app.route("/close_stale_issues", methods=['POST'])
 def close_stale_issues():
     payload = json.loads(request.data)
-    if 'repository' not in payload:
-        return
-    process_issues(payload['repository'])
+    for keyword in ['repository', 'cron_token', 'installation']:
+        if keyword not in payload:
+            return f'Payload mising {keyword}'
+    if payload['cron_token'] != app.cron_token:
+        return "Incorrect cron_token"
+    process_issues(payload['repository'], payload['installation'])
 
 
 @app.route("/hook", methods=['POST'])
