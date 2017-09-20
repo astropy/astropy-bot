@@ -7,12 +7,13 @@ from werkzeug.contrib.fixers import ProxyFix
 
 from changebot.changelog import check_changelog_consistency
 from changebot.github_api import RepoHandler, PullRequestHandler
-
+from changebot.issues import process_issues
 
 app = Flask('astropy-bot')
 app.wsgi_app = ProxyFix(app.wsgi_app)
 app.integration_id = int(os.environ['GITHUB_APP_INTEGRATION_ID'])
 app.private_key = os.environ['GITHUB_APP_PRIVATE_KEY']
+app.cron_token = os.environ['CRON_TOKEN']
 
 
 @app.route("/")
@@ -23,6 +24,17 @@ def index():
 @app.route("/installation_authorized")
 def installation_authorized():
     return "Installation authorized"
+
+
+@app.route("/close_stale_issues", methods=['POST'])
+def close_stale_issues():
+    payload = json.loads(request.data)
+    for keyword in ['repository', 'cron_token', 'installation']:
+        if keyword not in payload:
+            return f'Payload mising {keyword}'
+    if payload['cron_token'] != app.cron_token:
+        return "Incorrect cron_token"
+    process_issues(payload['repository'], payload['installation'])
 
 
 @app.route("/hook", methods=['POST'])
@@ -88,7 +100,7 @@ def hook():
     if 'Work in progress' in pr_handler.labels:
         message += ("I see this is a work in progress pull request. I'll "
                     "report back on the checks once the PR is ready for review.")
-        
+
     elif 'Experimental' in pr_handler.labels:
         message += ("I see this is an experimental pull request. I'll "
                     "report back on the checks once the PR discussion in settled.")
