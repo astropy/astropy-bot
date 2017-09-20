@@ -35,6 +35,7 @@ def close_stale_issues():
     if payload['cron_token'] != app.cron_token:
         return "Incorrect cron_token"
     process_issues(payload['repository'], payload['installation'])
+    return "All good"
 
 
 @app.route("/hook", methods=['POST'])
