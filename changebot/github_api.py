@@ -199,12 +199,12 @@ class IssueHandler(object):
                 q = random.choice(QUOTES)
             except Exception as e:
                 q = str(e) # Need a way to find out what went wrong
-                
+            q = f'\n*{q}*\n'
         else:
             q = ''
 
         data = {}
-        data['body'] = f'{body}\n*{q}*\n'
+        data['body'] = f'{body}{q}'
 
         if comment_id is None:
             url = self._url_issue_comment
