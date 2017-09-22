@@ -45,7 +45,7 @@ def close_stale_issues():
     return "All good"
 
 
-@app.route("/close_stale_issues", methods=['POST'])
+@app.route("/close_stale_prs", methods=['POST'])
 def close_stale_prs():
     payload = json.loads(request.data)
     for keyword in ['repository', 'cron_token', 'installation']:
