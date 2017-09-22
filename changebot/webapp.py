@@ -8,6 +8,7 @@ from werkzeug.contrib.fixers import ProxyFix
 from changebot.changelog import check_changelog_consistency
 from changebot.github_api import RepoHandler, PullRequestHandler
 from changebot.issues import process_issues
+from changebot.pull_requests import process_prs
 
 app = Flask('astropy-bot')
 app.wsgi_app = ProxyFix(app.wsgi_app)
@@ -17,6 +18,9 @@ app.cron_token = os.environ['CRON_TOKEN']
 app.stale_issue_close = os.environ['STALE_ISSUE_CLOSE'].lower() == 'true'
 app.stale_issue_close_seconds = float(os.environ['STALE_ISSUE_CLOSE_SECONDS'])
 app.stale_issue_warn_seconds = float(os.environ['STALE_ISSUE_WARN_SECONDS'])
+app.stale_prs_close = os.environ['STALE_PRS_CLOSE'].lower() == 'true'
+app.stale_prs_close_seconds = float(os.environ['STALE_PRS_CLOSE_SECONDS'])
+app.stale_prs_warn_seconds = float(os.environ['STALE_PRS_WARN_SECONDS'])
 
 
 @app.route("/")
@@ -38,6 +42,18 @@ def close_stale_issues():
     if payload['cron_token'] != app.cron_token:
         return "Incorrect cron_token"
     process_issues(payload['repository'], payload['installation'])
+    return "All good"
+
+
+@app.route("/close_stale_issues", methods=['POST'])
+def close_stale_prs():
+    payload = json.loads(request.data)
+    for keyword in ['repository', 'cron_token', 'installation']:
+        if keyword not in payload:
+            return f'Payload mising {keyword}'
+    if payload['cron_token'] != app.cron_token:
+        return "Incorrect cron_token"
+    process_prs(payload['repository'], payload['installation'])
     return "All good"
 
 
