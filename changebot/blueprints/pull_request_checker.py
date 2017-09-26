@@ -4,10 +4,10 @@ from flask import Blueprint, request
 from changebot.blueprints.changelog_helpers import check_changelog_consistency
 from changebot.github.github_api import RepoHandler, PullRequestHandler
 
-changelog_consistency = Blueprint('changelog_consistency', __name__)
+pull_request_checker = Blueprint('pull_request_checker', __name__)
 
 
-@changelog_consistency.route('/hook', methods=['POST'])
+@pull_request_checker.route('/hook', methods=['POST'])
 def hook():
 
     event = request.headers['X-GitHub-Event']
@@ -38,16 +38,21 @@ def hook():
     else:
         return
 
+    # TODO: in future, make this more generic so that any checks can be run.
+    # we could have a registry of checks and concatenate the responses
+    return process_changelog_consistency(payload['repository']['full_name'], number, installation)
+
+
+def process_changelog_consistency(repository, number, installation):
+
     # TODO: cache handlers and invalidate the internal cache of the handlers on
     # certain events.
-    pr_handler = PullRequestHandler(payload['repository']['full_name'], number, installation)
+    pr_handler = PullRequestHandler(repository, number, installation)
 
     repo_handler = RepoHandler(pr_handler.head_repo_name,
                                pr_handler.head_branch, installation)
 
     # Run checks
-    # TODO: in future, make this more generic so that any checks can be run.
-    # we could have a registry of checks and concatenate the responses
     issues = check_changelog_consistency(repo_handler, pr_handler)
 
     # Find previous comments by this app

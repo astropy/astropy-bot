@@ -6,7 +6,7 @@ from werkzeug.contrib.fixers import ProxyFix
 
 from changebot.blueprints.stale_issues import stale_issues
 from changebot.blueprints.stale_pull_requests import stale_prs
-from changebot.blueprints.changelog_consistency import changelog_consistency
+from changebot.blueprints.pull_request_checker import pull_request_checker
 
 app = Flask('astropy-bot')
 
@@ -22,7 +22,7 @@ app.stale_prs_close = os.environ['STALE_PRS_CLOSE'].lower() == 'true'
 app.stale_prs_close_seconds = float(os.environ['STALE_PRS_CLOSE_SECONDS'])
 app.stale_prs_warn_seconds = float(os.environ['STALE_PRS_WARN_SECONDS'])
 
-app.register_blueprint(changelog_consistency)
+app.register_blueprint(pull_request_checker)
 app.register_blueprint(stale_issues)
 app.register_blueprint(stale_prs)
 
