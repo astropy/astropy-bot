@@ -72,7 +72,7 @@ def process_changelog_consistency(repository, number, installation):
                'a maintainer you can ignore this, and a maintainer will let '
                'you know if any action is required on your part :smiley:.\n\n')
 
-    if 'Work in progress' in pr_handler.labels:
+    if set(['WIP', 'Work in progress']).intersection(set(pr_handler.labels)):
         message += ("I see this is a work in progress pull request. I'll "
                     "report back on the checks once the PR is ready for review.")
 
