@@ -7,6 +7,8 @@ from werkzeug.contrib.fixers import ProxyFix
 
 from changebot.changelog import check_changelog_consistency
 from changebot.github_api import RepoHandler, PullRequestHandler
+from changebot.issues import stale_issues
+from changebot.pull_requests import stale_prs
 
 app = Flask('astropy-bot')
 app.wsgi_app = ProxyFix(app.wsgi_app)
@@ -20,6 +22,9 @@ app.stale_prs_close = os.environ['STALE_PRS_CLOSE'].lower() == 'true'
 app.stale_prs_close_seconds = float(os.environ['STALE_PRS_CLOSE_SECONDS'])
 app.stale_prs_warn_seconds = float(os.environ['STALE_PRS_WARN_SECONDS'])
 
+app.register_blueprint(stale_issues)
+app.register_blueprint(stale_prs)
+
 
 @app.route("/")
 def index():
@@ -29,32 +34,6 @@ def index():
 @app.route("/installation_authorized")
 def installation_authorized():
     return "Installation authorized"
-
-
-@app.route("/close_stale_issues", methods=['POST'])
-def close_stale_issues():
-    from changebot.issues import process_issues
-    payload = json.loads(request.data)
-    for keyword in ['repository', 'cron_token', 'installation']:
-        if keyword not in payload:
-            return f'Payload mising {keyword}'
-    if payload['cron_token'] != app.cron_token:
-        return "Incorrect cron_token"
-    process_issues(payload['repository'], payload['installation'])
-    return "All good"
-
-
-@app.route("/close_stale_prs", methods=['POST'])
-def close_stale_prs():
-    from changebot.pull_requests import process_prs
-    payload = json.loads(request.data)
-    for keyword in ['repository', 'cron_token', 'installation']:
-        if keyword not in payload:
-            return f'Payload mising {keyword}'
-    if payload['cron_token'] != app.cron_token:
-        return "Incorrect cron_token"
-    process_prs(payload['repository'], payload['installation'])
-    return "All good"
 
 
 @app.route("/hook", methods=['POST'])
