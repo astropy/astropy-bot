@@ -23,11 +23,23 @@ More details about the bot and its components is provided in the sections below.
 
 ### Overall bot set-up
 
-The Flask app is set up on [Heroku](http://heroku.com), and we use the auto-deploy
-functionality in Heroku to re-deploy the app anytime a change is made to this
-repository. The only custom configuration on Heroku is that certain environment
-variables are set through the Heroku admin interface. The main required
-environment variables are::
+The GitHub app is defined in the [Astropy organization settings](https://github.com/organizations/astropy/settings/apps/astropy-bot).
+The two main settings, in addition to generating a private key, are:
+
+* **User authorization callback URL**: http://astrochangebot.herokuapp.com/callback
+* **Webhook URL**: http://astrochangebot.herokuapp.com/hook
+
+The permissions of the app should be read/write access to **Commit statuses**,
+**Issues** and **Pull requests**. The app can be added to specific repositories
+under the **Your installations** tab, by clicking on the gearbox next to
+**Astropy**, which goes to [this page](https://github.com/organizations/astropy/settings/installations/37176).
+
+The ``astrochangebot.herokuapp.com`` server is a Flask app that is set up on
+[Heroku](http://heroku.com). We use the auto-deploy functionality in Heroku
+to re-deploy the app anytime a change is made to this repository. The only
+custom configuration on Heroku is that certain environment variables are set
+through the Heroku admin interface. The main required environment variables
+are::
 
 * ``GITHUB_APP_INTEGRATION_ID`` - this should be set to the integration ID
   provided by GitHub. For this app the integration ID is currently 3400 (this
@@ -122,10 +134,46 @@ do not require authentication. For example, the following should work:
     ['Enhancement', 'Refactoring', 'testing', 'Work in progress']
     >>> pr.last_commit_date
     1506374526.0
-    
-However since these are being run un-authenticated, you may quickly run into the GitHub public API limits. There is currently no easy way to test the parts of the GitHub API that require authentication (e.g. adding comments to issues), but this is hopefully something we can address in future (contributions welcome!).
 
-The authentication of the app is handled in the [changebot/github/github_auth.py](changebot/github/github_auth.py) file - the main function from there that is used in [changebot/github/github_api.py](changebot/github/github_api.py) is the ``github_request_headers`` function which returns headers for requests that contain the appropriate tokens.
+However since these are being run un-authenticated, you may quickly run into the GitHub public API limits. If you are interested in authenticating locally, see the **Authentication** section below.
+
+Code-wise, the authentication of the app is handled in the [changebot/github/github_auth.py](changebot/github/github_auth.py) file - the main function from there that is used in [changebot/github/github_api.py](changebot/github/github_api.py) is the ``github_request_headers`` function which returns headers for requests that contain the appropriate tokens.
+
+### Authentication
+
+In some cases, you may want to test the bot locally as if it was running on
+Heroku. In order to do this you will need to make sure you have all the
+environment variables described above set correctly.
+
+The main ones to get right as far as authentication is concerned are:
+
+* ``GITHUB_APP_INTEGRATION_ID`` - this ID can be found at the main GitHub app
+  [settings page](https://github.com/organizations/astropy/settings/apps/astropy-bot). It should be 3400 at the time of writing this.
+* ``GITHUB_APP_PRIVATE_KEY`` - don't be tempted to re-generate a key from the
+  GitHub app settings. There is a key that is already generated that we should
+  use - ask @astrofrog if you would like to know the key.
+
+The last thing you will need is an **Installation ID** - a GitHub app can be
+linked to different GitHub accounts, and for each account or organization, it
+has a unique ID. You can find out this ID by going to **Your installations** and
+then clicking on the settings box next to the account where you have a test
+repository you want to interact with. The URL of the page you go to will look
+like:
+
+    https://github.com/settings/installations/36238
+
+In this case, 37176 is the installation ID. Provided you set the environment
+variables correctly, you should then be able to do e.g.:
+
+    >>> from changebot.github.github_api import IssueHandler
+    >>> issue = IssueHandler('astrofrog/test-bot', 5, installation=36238)
+    >>> issue.submit_comment('I am alive!')
+
+Use this power wisely! (and avoid testing out things on the main Astropy
+repos...)
+
+**Note:** authentication will not work properly if you have a ``.netrc`` file
+in your home directory, so you will need to rename this file temporarily.
 
 ### Requirements
 
