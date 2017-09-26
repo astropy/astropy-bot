@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/astropy/astropy-bot.svg?branch=master)](https://travis-ci.org/astropy/astropy-bot)
+[![Coverage Status](https://coveralls.io/repos/github/astropy/astropy-bot/badge.svg?branch=master)](https://coveralls.io/github/astropy/astropy-bot?branch=master)
 
 ### About
 
