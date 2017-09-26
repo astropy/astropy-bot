@@ -190,14 +190,14 @@ variables correctly, you should then be able to do e.g.:
 
 ```python
 >>> from changebot.github.github_api import IssueHandler
->>> issue = IssueHandler('astrofrog/test-bot', 5, installation=36238)
+>>> issue = IssueHandler('astrofrog/test-bot', 5, installation=37176)
 >>> issue.submit_comment('I am alive!')
 ```
 
-Use this power wisely! (and avoid testing out things on the main Astropy
+Use this power wisely! (And avoid testing out things on the main Astropy
 repos...)
 
-**Note:** authentication will not work properly if you have a ``.netrc`` file
+**Note:** Authentication will not work properly if you have a ``.netrc`` file
 in your home directory, so you will need to rename this file temporarily.
 
 ### Requirements
