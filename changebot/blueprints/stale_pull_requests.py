@@ -1,7 +1,7 @@
 import time
 import json
 from humanize import naturaldelta
-from changebot.github_api import PullRequestHandler, RepoHandler
+from changebot.github.github_api import PullRequestHandler, RepoHandler
 from flask import Blueprint, request, current_app
 
 stale_prs = Blueprint('stale_prs', __name__)
@@ -49,8 +49,6 @@ def is_close_epilogue(message):
 
 def process_prs(repository, installation):
 
-    from .webapp import app
-
     now = time.time()
 
     # Get issues labeled as 'Close?'
@@ -69,7 +67,7 @@ def process_prs(repository, installation):
 
         dt = now - commit_time
 
-        if app.stale_prs_close and dt > app.stale_prs_close_seconds:
+        if current_app.stale_prs_close and dt > current_app.stale_prs_close_seconds:
             comment_ids = pr.find_comments('astropy-bot[bot]', filter_keep=is_close_epilogue)
             if len(comment_ids) == 0:
                 print(f'-> CLOSING issue {n}')
@@ -77,12 +75,12 @@ def process_prs(repository, installation):
                 pr.close()
             else:
                 print(f'-> Skipping issue {n} (already closed)')
-        elif dt > app.stale_prs_warn_seconds:
+        elif dt > current_app.stale_prs_warn_seconds:
             comment_ids = pr.find_comments('astropy-bot[bot]', filter_keep=is_close_warning)
             if len(comment_ids) == 0:
                 print(f'-> WARNING issue {n}')
-                pr.submit_comment(PRS_CLOSE_WARNING.format(pasttime=naturaldelta(app.stale_prs_warn_seconds),
-                                                           futuretime=naturaldelta(app.stale_prs_close_seconds - app.stale_prs_warn_seconds)))
+                pr.submit_comment(PRS_CLOSE_WARNING.format(pasttime=naturaldelta(current_app.stale_prs_warn_seconds),
+                                                           futuretime=naturaldelta(current_app.stale_prs_close_seconds - current_app.stale_prs_warn_seconds)))
             else:
                 print(f'-> Skipping issue {n} (already warned)')
         else:

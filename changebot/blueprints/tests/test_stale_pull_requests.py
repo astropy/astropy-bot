@@ -2,9 +2,11 @@ import json
 import time
 from mock import patch, PropertyMock
 
-from ..webapp import app
-from ..github_api import RepoHandler, PullRequestHandler
-from ..stale_pull_requests import process_prs, PRS_CLOSE_EPILOGUE, PRS_CLOSE_WARNING
+from changebot.webapp import app
+from changebot.github.github_api import RepoHandler, PullRequestHandler
+from changebot.blueprints.stale_pull_requests import (process_prs,
+                                                      PRS_CLOSE_EPILOGUE,
+                                                      PRS_CLOSE_WARNING)
 
 
 def now():
@@ -19,7 +21,7 @@ class TestHook:
     @patch.object(app, 'cron_token', '12345')
     def test_valid(self):
         data = {'repository': 'test-repo', 'cron_token': '12345', 'installation': '123'}
-        with patch('changebot.stale_pull_requests.process_prs') as p:
+        with patch('changebot.blueprints.stale_pull_requests.process_prs') as p:
             self.client.post('/close_stale_prs', data=json.dumps(data),
                              content_type='application/json')
             assert p.call_count == 1
@@ -27,7 +29,7 @@ class TestHook:
     @patch.object(app, 'cron_token', '12345')
     def test_invalid_cron(self):
         data = {'repository': 'test-repo', 'cron_token': '12344', 'installation': '123'}
-        with patch('changebot.stale_pull_requests.process_prs') as p:
+        with patch('changebot.blueprints.stale_pull_requests.process_prs') as p:
             self.client.post('/close_stale_prs', data=json.dumps(data),
                              content_type='application/json')
             assert p.call_count == 0
@@ -35,7 +37,7 @@ class TestHook:
     @patch.object(app, 'cron_token', '12345')
     def test_missing_keyword(self):
         data = {'cron_token': '12344', 'installation': '123'}
-        with patch('changebot.stale_pull_requests.process_prs') as p:
+        with patch('changebot.blueprints.stale_pull_requests.process_prs') as p:
             self.client.post('/close_stale_prs', data=json.dumps(data),
                              content_type='application/json')
             assert p.call_count == 0
@@ -81,7 +83,9 @@ class TestProcessIssues:
         self.last_commit_date.return_value = now() - 241
         self.find_comments.return_value = ['1']
         self.labels.return_value = ['io.fits', 'Bug']
-        process_prs('repo', 'installation')
+
+        with app.app_context():
+            process_prs('repo', 'installation')
 
         assert self.submit_comment.call_count == 0
         assert self.close.call_count == 0
@@ -95,7 +99,8 @@ class TestProcessIssues:
         self.last_commit_date.return_value = now() - 241
         self.find_comments.return_value = []
 
-        process_prs('repo', 'installation')
+        with app.app_context():
+            process_prs('repo', 'installation')
 
         assert self.submit_comment.call_count == 1
         expected = PRS_CLOSE_EPILOGUE
@@ -112,8 +117,9 @@ class TestProcessIssues:
         self.last_commit_date.return_value = now() - 241
         self.find_comments.return_value = []
 
-        with patch.object(app, 'stale_prs_close', False):
-            process_prs('repo', 'installation')
+        with app.app_context():
+            with patch.object(app, 'stale_prs_close', False):
+                process_prs('repo', 'installation')
 
         assert self.submit_comment.call_count == 1
         expected = PRS_CLOSE_WARNING.format(pasttime='3 minutes', futuretime='20 seconds')
@@ -129,8 +135,9 @@ class TestProcessIssues:
         self.last_commit_date.return_value = now() - 241
         self.find_comments.return_value = []
 
-        with patch.object(app, 'stale_prs_close', False):
-            process_prs('repo', 'installation')
+        with app.app_context():
+            with patch.object(app, 'stale_prs_close', False):
+                process_prs('repo', 'installation')
 
         assert self.submit_comment.call_count == 1
         expected = PRS_CLOSE_WARNING.format(pasttime='3 minutes', futuretime='20 seconds')
@@ -146,7 +153,8 @@ class TestProcessIssues:
         self.last_commit_date.return_value = now() - 230
         self.find_comments.return_value = ['1']
 
-        process_prs('repo', 'installation')
+        with app.app_context():
+            process_prs('repo', 'installation')
 
         assert self.submit_comment.call_count == 0
         assert self.close.call_count == 0
@@ -160,7 +168,8 @@ class TestProcessIssues:
         self.last_commit_date.return_value = now() - 230
         self.find_comments.return_value = []
 
-        process_prs('repo', 'installation')
+        with app.app_context():
+            process_prs('repo', 'installation')
 
         assert self.submit_comment.call_count == 1
         expected = PRS_CLOSE_WARNING.format(pasttime='3 minutes', futuretime='20 seconds')
@@ -175,7 +184,8 @@ class TestProcessIssues:
         self.last_commit_date.return_value = now() - 210
         self.find_comments.return_value = []
 
-        process_prs('repo', 'installation')
+        with app.app_context():
+            process_prs('repo', 'installation')
 
         assert self.find_comments.call_count == 0
         assert self.submit_comment.call_count == 0

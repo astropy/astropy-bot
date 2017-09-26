@@ -2,9 +2,11 @@ import json
 import time
 from mock import patch
 
-from ..webapp import app
-from ..github_api import RepoHandler, IssueHandler
-from ..stale_issues import process_issues, ISSUE_CLOSE_EPILOGUE, ISSUE_CLOSE_WARNING
+from changebot.webapp import app
+from changebot.github.github_api import RepoHandler, IssueHandler
+from changebot.blueprints.stale_issues import (process_issues,
+                                               ISSUE_CLOSE_EPILOGUE,
+                                               ISSUE_CLOSE_WARNING)
 
 
 def now():
@@ -19,7 +21,7 @@ class TestHook:
     @patch.object(app, 'cron_token', '12345')
     def test_valid(self):
         data = {'repository': 'test-repo', 'cron_token': '12345', 'installation': '123'}
-        with patch('changebot.stale_issues.process_issues') as p:
+        with patch('changebot.blueprints.stale_issues.process_issues') as p:
             self.client.post('/close_stale_issues', data=json.dumps(data),
                              content_type='application/json')
             assert p.call_count == 1
@@ -27,7 +29,7 @@ class TestHook:
     @patch.object(app, 'cron_token', '12345')
     def test_invalid_cron(self):
         data = {'repository': 'test-repo', 'cron_token': '12344', 'installation': '123'}
-        with patch('changebot.stale_issues.process_issues') as p:
+        with patch('changebot.blueprints.stale_issues.process_issues') as p:
             self.client.post('/close_stale_issues', data=json.dumps(data),
                              content_type='application/json')
             assert p.call_count == 0
@@ -35,7 +37,7 @@ class TestHook:
     @patch.object(app, 'cron_token', '12345')
     def test_missing_keyword(self):
         data = {'cron_token': '12344', 'installation': '123'}
-        with patch('changebot.stale_issues.process_issues') as p:
+        with patch('changebot.blueprints.stale_issues.process_issues') as p:
             self.client.post('/close_stale_issues', data=json.dumps(data),
                              content_type='application/json')
             assert p.call_count == 0
@@ -78,7 +80,8 @@ class TestProcessIssues:
         self.get_label_added_date.return_value = now() - 34443
         self.find_comments.return_value = ['1']
 
-        process_issues('repo', 'installation')
+        with app.app_context():
+            process_issues('repo', 'installation')
 
         self.get_issues.assert_called_with('open', 'Close?')
         self.get_label_added_date.assert_called_with('Close?')
@@ -95,7 +98,8 @@ class TestProcessIssues:
         self.get_label_added_date.return_value = now() - 34443
         self.find_comments.return_value = []
 
-        process_issues('repo', 'installation')
+        with app.app_context():
+            process_issues('repo', 'installation')
 
         assert self.submit_comment.call_count == 1
         expected = ISSUE_CLOSE_EPILOGUE
@@ -112,8 +116,9 @@ class TestProcessIssues:
         self.get_label_added_date.return_value = now() - 34443
         self.find_comments.return_value = []
 
-        with patch.object(app, 'stale_issue_close', False):
-            process_issues('repo', 'installation')
+        with app.app_context():
+            with patch.object(app, 'stale_issue_close', False):
+                process_issues('repo', 'installation')
 
         assert self.submit_comment.call_count == 1
         expected = ISSUE_CLOSE_WARNING.format(pasttime='3 hours ago', futuretime='5 hours')
@@ -129,7 +134,8 @@ class TestProcessIssues:
         self.get_label_added_date.return_value = now() - 34400
         self.find_comments.return_value = ['1']
 
-        process_issues('repo', 'installation')
+        with app.app_context():
+            process_issues('repo', 'installation')
 
         assert self.submit_comment.call_count == 0
         assert self.close.call_count == 0
@@ -143,7 +149,8 @@ class TestProcessIssues:
         self.get_label_added_date.return_value = now() - 34400
         self.find_comments.return_value = []
 
-        process_issues('repo', 'installation')
+        with app.app_context():
+            process_issues('repo', 'installation')
 
         assert self.submit_comment.call_count == 1
         expected = ISSUE_CLOSE_WARNING.format(pasttime='3 hours ago', futuretime='5 hours')
@@ -158,7 +165,8 @@ class TestProcessIssues:
         self.get_label_added_date.return_value = now() - 14000
         self.find_comments.return_value = []
 
-        process_issues('repo', 'installation')
+        with app.app_context():
+            process_issues('repo', 'installation')
 
         assert self.find_comments.call_count == 0
         assert self.submit_comment.call_count == 0

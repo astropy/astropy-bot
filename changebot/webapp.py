@@ -4,9 +4,9 @@ from flask import Flask
 
 from werkzeug.contrib.fixers import ProxyFix
 
-from changebot.stale_issues import stale_issues
-from changebot.stale_pull_requests import stale_prs
-from changebot.changelog_consistency import changelog_consistency
+from changebot.blueprints.stale_issues import stale_issues
+from changebot.blueprints.stale_pull_requests import stale_prs
+from changebot.blueprints.changelog_consistency import changelog_consistency
 
 app = Flask('astropy-bot')
 
