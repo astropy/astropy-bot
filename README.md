@@ -1,6 +1,3 @@
-About
-=====
-
 ### About
 
 This is a GitHub bot written using Flask for the Astropy project which can be
