@@ -114,6 +114,24 @@ For issues, removing the **Close?** label and adding it back resets the clock.
 For pull requests, adding a new commit resets the clock, while adding the
 **keep-open** label means that this pull request will not be touched by the bot.
 
+To run these checks, you can access http://astrochangebot.herokuapp.com/close_stale_issues using a POST request and with the following parameters encoded in JSON:
+
+* ``'repository'``: the name of the repository to run the checks for, including the owner (e.g. ``astropy/astropy``)
+* ``'cron_token'``: this should be the same as the ``CRON_TOKEN`` environment variable
+* ``'installation'``: this should be the installation ID (see the **Authentication** section). For the astropy organization repositories, this is 37176.
+
+An example for how to do this with the requests package is:
+
+```python
+import requests
+
+data = {'repository': 'astrofrog/test-bot',
+        'cron_token': 'theactualtoken',
+        'installation': '36238'}
+
+requests.post(URL, json=data)
+```
+
 ### GitHub API
 
 The different components of the bot interact with GitHub via a set of helper
@@ -122,18 +140,20 @@ These classes are ``RepoHandler``, ``IssueHandler``, and ``PullRequestHandler``.
 is possible to try these out locally, at least for the parts of the GitHub API that
 do not require authentication. For example, the following should work:
 
-    >>> from changebot.github.github_api import RepoHandler, IssueHandler, PullRequestHandler
-    >>> repo = RepoHandler('astropy/astropy')
-    >>> repo.get_issues('open', 'Close?')
-    [6025, 5193, 4842, 4549, 4058, 3951, 3845, 2603, 2232, 1920, 1024, 435, 383, 282]
-    >>> issue = IssueHandler('astropy/astropy', 6597)
-    >>> issue.labels
-    ['Bug', 'coordinates']
-    >>> pr = PullRequestHandler('astropy/astropy', 6606)
-    >>> pr.labels
-    ['Enhancement', 'Refactoring', 'testing', 'Work in progress']
-    >>> pr.last_commit_date
-    1506374526.0
+```python
+>>> from changebot.github.github_api import RepoHandler, IssueHandler, PullRequestHandler
+>>> repo = RepoHandler('astropy/astropy')
+>>> repo.get_issues('open', 'Close?')
+[6025, 5193, 4842, 4549, 4058, 3951, 3845, 2603, 2232, 1920, 1024, 435, 383, 282]
+>>> issue = IssueHandler('astropy/astropy', 6597)
+>>> issue.labels
+['Bug', 'coordinates']
+>>> pr = PullRequestHandler('astropy/astropy', 6606)
+>>> pr.labels
+['Enhancement', 'Refactoring', 'testing', 'Work in progress']
+>>> pr.last_commit_date
+1506374526.0
+```
 
 However since these are being run un-authenticated, you may quickly run into the GitHub public API limits. If you are interested in authenticating locally, see the **Authentication** section below.
 
@@ -165,9 +185,11 @@ like:
 In this case, 37176 is the installation ID. Provided you set the environment
 variables correctly, you should then be able to do e.g.:
 
-    >>> from changebot.github.github_api import IssueHandler
-    >>> issue = IssueHandler('astrofrog/test-bot', 5, installation=36238)
-    >>> issue.submit_comment('I am alive!')
+```python
+>>> from changebot.github.github_api import IssueHandler
+>>> issue = IssueHandler('astrofrog/test-bot', 5, installation=36238)
+>>> issue.submit_comment('I am alive!')
+```
 
 Use this power wisely! (and avoid testing out things on the main Astropy
 repos...)
