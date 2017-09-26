@@ -7,8 +7,8 @@ from werkzeug.contrib.fixers import ProxyFix
 
 from changebot.changelog import check_changelog_consistency
 from changebot.github_api import RepoHandler, PullRequestHandler
-from changebot.issues import stale_issues
-from changebot.pull_requests import stale_prs
+from changebot.stale_issues import stale_issues
+from changebot.stale_pull_requests import stale_prs
 
 app = Flask('astropy-bot')
 app.wsgi_app = ProxyFix(app.wsgi_app)

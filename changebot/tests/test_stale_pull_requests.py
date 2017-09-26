@@ -4,7 +4,7 @@ from mock import patch, PropertyMock
 
 from ..webapp import app
 from ..github_api import RepoHandler, PullRequestHandler
-from ..pull_requests import process_prs, PRS_CLOSE_EPILOGUE, PRS_CLOSE_WARNING
+from ..stale_pull_requests import process_prs, PRS_CLOSE_EPILOGUE, PRS_CLOSE_WARNING
 
 
 def now():
@@ -19,7 +19,7 @@ class TestHook:
     @patch.object(app, 'cron_token', '12345')
     def test_valid(self):
         data = {'repository': 'test-repo', 'cron_token': '12345', 'installation': '123'}
-        with patch('changebot.pull_requests.process_prs') as p:
+        with patch('changebot.stale_pull_requests.process_prs') as p:
             self.client.post('/close_stale_prs', data=json.dumps(data),
                              content_type='application/json')
             assert p.call_count == 1
@@ -27,7 +27,7 @@ class TestHook:
     @patch.object(app, 'cron_token', '12345')
     def test_invalid_cron(self):
         data = {'repository': 'test-repo', 'cron_token': '12344', 'installation': '123'}
-        with patch('changebot.pull_requests.process_prs') as p:
+        with patch('changebot.stale_pull_requests.process_prs') as p:
             self.client.post('/close_stale_prs', data=json.dumps(data),
                              content_type='application/json')
             assert p.call_count == 0
@@ -35,7 +35,7 @@ class TestHook:
     @patch.object(app, 'cron_token', '12345')
     def test_missing_keyword(self):
         data = {'cron_token': '12344', 'installation': '123'}
-        with patch('changebot.pull_requests.process_prs') as p:
+        with patch('changebot.stale_pull_requests.process_prs') as p:
             self.client.post('/close_stale_prs', data=json.dumps(data),
                              content_type='application/json')
             assert p.call_count == 0
