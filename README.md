@@ -185,12 +185,12 @@ like:
 
     https://github.com/settings/installations/36238
 
-In this case, 37176 is the installation ID. Provided you set the environment
+In this case, 36238 is the installation ID. Provided you set the environment
 variables correctly, you should then be able to do e.g.:
 
 ```python
 >>> from changebot.github.github_api import IssueHandler
->>> issue = IssueHandler('astrofrog/test-bot', 5, installation=37176)
+>>> issue = IssueHandler('astrofrog/test-bot', 5, installation=36238)
 >>> issue.submit_comment('I am alive!')
 ```
 
