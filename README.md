@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/astropy/astropy-bot.svg?branch=master)](https://travis-ci.org/astropy/astropy-bot)
+
 ### About
 
 This is a GitHub bot written using Flask for the Astropy project which can be
