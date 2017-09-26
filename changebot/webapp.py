@@ -7,8 +7,6 @@ from werkzeug.contrib.fixers import ProxyFix
 
 from changebot.changelog import check_changelog_consistency
 from changebot.github_api import RepoHandler, PullRequestHandler
-from changebot.issues import process_issues
-from changebot.pull_requests import process_prs
 
 app = Flask('astropy-bot')
 app.wsgi_app = ProxyFix(app.wsgi_app)
@@ -35,6 +33,7 @@ def installation_authorized():
 
 @app.route("/close_stale_issues", methods=['POST'])
 def close_stale_issues():
+    from changebot.issues import process_issues
     payload = json.loads(request.data)
     for keyword in ['repository', 'cron_token', 'installation']:
         if keyword not in payload:
@@ -47,6 +46,7 @@ def close_stale_issues():
 
 @app.route("/close_stale_prs", methods=['POST'])
 def close_stale_prs():
+    from changebot.pull_requests import process_prs
     payload = json.loads(request.data)
     for keyword in ['repository', 'cron_token', 'installation']:
         if keyword not in payload:
