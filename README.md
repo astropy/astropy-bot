@@ -102,6 +102,31 @@ For issues, removing the **Close?** label and adding it back resets the clock.
 For pull requests, adding a new commit resets the clock, while adding the
 **keep-open** label means that this pull request will not be touched by the bot.
 
+### GitHub API
+
+The different components of the bot interact with GitHub via a set of helper
+classes that live in [changebot/github/github_api.py](changebot/github/github_api.py).
+These classes are ``RepoHandler``, ``IssueHandler``, and ``PullRequestHandler``. It
+is possible to try these out locally, at least for the parts of the GitHub API that
+do not require authentication. For example, the following should work:
+
+    >>> from changebot.github.github_api import RepoHandler, IssueHandler, PullRequestHandler
+    >>> repo = RepoHandler('astropy/astropy')
+    >>> repo.get_issues('open', 'Close?')
+    [6025, 5193, 4842, 4549, 4058, 3951, 3845, 2603, 2232, 1920, 1024, 435, 383, 282]
+    >>> issue = IssueHandler('astropy/astropy', 6597)
+    >>> issue.labels
+    ['Bug', 'coordinates']
+    >>> pr = PullRequestHandler('astropy/astropy', 6606)
+    >>> pr.labels
+    ['Enhancement', 'Refactoring', 'testing', 'Work in progress']
+    >>> pr.last_commit_date
+    1506374526.0
+    
+However since these are being run un-authenticated, you may quickly run into the GitHub public API limits. There is currently no easy way to test the parts of the GitHub API that require authentication (e.g. adding comments to issues), but this is hopefully something we can address in future (contributions welcome!).
+
+The authentication of the app is handled in the [changebot/github/github_auth.py](changebot/github/github_auth.py) file - the main function from there that is used in [changebot/github/github_api.py](changebot/github/github_api.py) is the ``github_request_headers`` function which returns headers for requests that contain the appropriate tokens.
+
 ### Requirements
 
 This app requires Python 3.6 to run, and dependencies are listed in ``requirements.txt``
