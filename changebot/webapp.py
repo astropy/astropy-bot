@@ -5,7 +5,7 @@ from flask import Flask
 from werkzeug.contrib.fixers import ProxyFix
 
 from changebot.blueprints.stale_issues import stale_issues
-from changebot.blueprints.stale_pull_requests import stale_prs
+from changebot.blueprints.stale_pull_requests import stale_pull_requests
 from changebot.blueprints.pull_request_checker import pull_request_checker
 
 app = Flask('astropy-bot')
@@ -18,13 +18,13 @@ app.cron_token = os.environ['CRON_TOKEN']
 app.stale_issue_close = os.environ['STALE_ISSUE_CLOSE'].lower() == 'true'
 app.stale_issue_close_seconds = float(os.environ['STALE_ISSUE_CLOSE_SECONDS'])
 app.stale_issue_warn_seconds = float(os.environ['STALE_ISSUE_WARN_SECONDS'])
-app.stale_prs_close = os.environ['STALE_PRS_CLOSE'].lower() == 'true'
-app.stale_prs_close_seconds = float(os.environ['STALE_PRS_CLOSE_SECONDS'])
-app.stale_prs_warn_seconds = float(os.environ['STALE_PRS_WARN_SECONDS'])
+app.stale_pull_requests_close = os.environ['STALE_PULL_REQUEST_CLOSE'].lower() == 'true'
+app.stale_pull_requests_close_seconds = float(os.environ['STALE_PULL_REQUEST_CLOSE_SECONDS'])
+app.stale_pull_requests_warn_seconds = float(os.environ['STALE_PULL_REQUEST_WARN_SECONDS'])
 
 app.register_blueprint(pull_request_checker)
 app.register_blueprint(stale_issues)
-app.register_blueprint(stale_prs)
+app.register_blueprint(stale_pull_requests)
 
 
 @app.route("/")

@@ -26,7 +26,7 @@ def find_prs_in_changelog_by_section(content):
     previous = None
 
     new_changelog_format = False
-    
+
     for line in content.splitlines():
         if '=======' in line:
             new_changelog_format = True

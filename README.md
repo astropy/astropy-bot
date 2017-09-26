@@ -101,23 +101,23 @@ Heroku:
   labelled as **Close?** in order to be considered ready for closing. This
   should be larger than ``STALE_ISSUE_WARN_SECONDS``.
 
-* ``STALE_PRS_CLOSE`` - this should be set to ``TRUE`` or ``FALSE``. If
+* ``STALE_PULL_REQUEST_CLOSE`` - this should be set to ``TRUE`` or ``FALSE``. If
   ``FALSE``, this doesn't check for whether pull requests should be closed, only
   whether the warning about closing should be posted. The intent is that this
   should always be ``TRUE`` except the first time that this is run.
 
-* ``STALE_PRS_WARN_SECONDS`` - the time in seconds from the last commit in
+* ``STALE_PULL_REQUEST_WARN_SECONDS`` - the time in seconds from the last commit in
   order to be warned that it will be closed.
 
-* ``STALE_PRS_CLOSE_SECONDS`` - the time in seconds from the last commit in
+* ``STALE_PULL_REQUEST_CLOSE_SECONDS`` - the time in seconds from the last commit in
   order to be considered ready for closing. This should be larger than
-  ``STALE_PRS_WARN_SECONDS``.
+  ``STALE_PULL_REQUEST_WARN_SECONDS``.
 
 For issues, removing the **Close?** label and adding it back resets the clock.
 For pull requests, adding a new commit resets the clock, while adding the
 **keep-open** label means that this pull request will not be touched by the bot.
 
-To run these checks, you can access http://astrochangebot.herokuapp.com/close_stale_issues using a POST request and with the following parameters encoded in JSON:
+To run these checks, you can access http://astrochangebot.herokuapp.com/close_stale_issues and http://astrochangebot.herokuapp.com/close_stale_pull_requests using a POST request and with the following parameters encoded in JSON:
 
 * ``'repository'``: the name of the repository to run the checks for, including the owner (e.g. ``astropy/astropy``)
 * ``'cron_token'``: this should be the same as the ``CRON_TOKEN`` environment variable
