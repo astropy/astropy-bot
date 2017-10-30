@@ -184,7 +184,7 @@ The main logic is defined in
 If ``CHANGES.rst``, ``CHANGES``, or ``CHANGES.md`` file does not exist in the
 repository, bot will not comment at all.
 
-For repositories that do not utilize change log, this checker can be disabled
+For repositories that do not use a changelog, this checker can be disabled
 by defining ``CHANGELOG_CHECK: false`` in ``.astropybot.yml`` at the top
 level of the repository.
 
