@@ -95,6 +95,13 @@ These must also be set whether you wish to use them or not.
 
 #### Optional: GitHub settings (adding a separate instance of this bot)
 
+*NOTE: If you are creating a new instance of this bot from your fork
+using a different bot name, it is important that you replace ``astropy-bot``
+with your new bot's name in the production branch of your fork.
+Otherwise, the bot will not able to edit its comments. However, you don't
+have to modify the https://github.com/astropy/astropy-bot/issues URLs
+because your fork will not have its own issues tracker.*
+
 To add the bot to your own organization or account, go to your
 GitHub organization or account URL (not the repository) and
 then its settings. Then, click on "Developer settings" at the very bottom
