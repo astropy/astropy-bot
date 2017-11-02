@@ -118,8 +118,9 @@ provide a description of what your bot intends to do but not required.
 The permissions of the app should be read/write access to **Commit statuses**,
 **Issues**, and **Pull requests**. Once you have checked these options,
 you will see extra "Subscribe to events" entries that you can check as well.
-For the events, it should be sufficient to only check **Status**, **Issues**,
-and **Pull Request**.
+For the events, it should be sufficient to only check **Status**,
+**Issue comment**, **Issues**, **Pull request**, **Pull request review**,
+and **Pull request review comment**.
 
 It is up to you to choose whether you want to allow your GitHub app here to
 be installed only on your account or by any user or organization.
@@ -170,6 +171,9 @@ the changelog is consistent with the pull request number, labels, and milestone.
 The main logic is defined in
 [pull_request_checker.py](changebot/blueprints/pull_request_checker.py) and
 [changelog_helpers.py](changebot/blueprints/changelog_helpers.py)
+
+If ``CHANGES.rst``, ``CHANGES``, or ``CHANGES.md`` file does not exist in the
+repository, bot will not comment at all.
 
 ### Stale issue and pull request checkers
 
