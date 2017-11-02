@@ -4,7 +4,7 @@
 ### About
 
 This is a GitHub bot written using Flask for the Astropy project which can be
-installed via GitHub integrations. We use the concept of flask 'blueprints' to
+installed via GitHub integrations. We use the concept of flask "blueprints" to
 separate the different functionality. Each blueprint is defined in a separate
 file inside [changebot/blueprints](changebot/blueprints). The bot includes the
 following functionality:
@@ -14,11 +14,11 @@ following functionality:
   labels but this could be expanded in future. This is defined in
   [pull_request_checker.py](changebot/blueprints/pull_request_checker.py).
 
-* Check for issues labelled as 'Close?' that have become stale, and close them
+* Check for issues labeled as "Close?" that have become stale, and close them
   (with a warning period). This is defined in
   [stale_issues.py](changebot/blueprints/stale_issues.py).
 
-* Check for pull requests labelled as 'Close?' that have become stale, and close
+* Check for pull requests that have become stale, and close
   them (with a warning period). This is defined in
   [stale_pull_requests.py](changebot/blueprints/stale_pull_requests.py).
 
@@ -26,47 +26,140 @@ More details about the bot and its components is provided in the sections below.
 
 ### Overall bot set-up
 
-The GitHub app is defined in the [Astropy organization settings](https://github.com/organizations/astropy/settings/apps/astropy-bot).
-The two main settings, in addition to generating a private key, are:
+#### Optional: Heroku settings (creating a separate instance of this bot)
 
-* **User authorization callback URL**: http://astrochangebot.herokuapp.com/callback
-* **Webhook URL**: http://astrochangebot.herokuapp.com/hook
+For ``astropy-bot``, the ``astrochangebot.herokuapp.com`` server is a GitHub
+app that is set up on [Heroku](https://heroku.com).
+We use the auto-deploy functionality in Heroku to re-deploy the app anytime
+a change is made to this repository.
 
-The permissions of the app should be read/write access to **Commit statuses**,
-**Issues** and **Pull requests**. The app can be added to specific repositories
-under the **Your installations** tab, by clicking on the gearbox next to
-**Astropy**, which goes to [this page](https://github.com/organizations/astropy/settings/installations/37176).
+To create your own instance of the bot, first, if you don't already have
+a Heroku account, create a free one there. When you see the option to
+create a new app, select it (ignore the "add to pipeline" option).
+Give a name to your app; You need to select a name that is not already
+taken and it does not have to be the same as the bot's name here.
 
-The ``astrochangebot.herokuapp.com`` server is a Flask app that is set up on
-[Heroku](http://heroku.com). We use the auto-deploy functionality in Heroku
-to re-deploy the app anytime a change is made to this repository. The only
-custom configuration on Heroku is that certain environment variables are set
-through the Heroku admin interface. The main required environment variables
-are::
+You should now be on the "Deploy" section. Again, ignore the pipeline
+option. Select Github as "Deployment Method". Enter the relevant GitHub
+organization or account that the bot resides in (this should be automatically
+populated if you have given Heroku access to your GitHub account) and type
+in the bot's repository name (either this bot or a forked version of it).
 
-* ``GITHUB_APP_INTEGRATION_ID`` - this should be set to the integration ID
-  provided by GitHub. For this app the integration ID is currently 3400 (this
-  is not a secret).
-* ``GITHUB_APP_PRIVATE_KEY`` - GitHub generates a private key when setting up
-  a GitHub integration. This private key should look like:
+If you want to enable automatic deployment from a selected branch of the
+repository, click the "Enable Automatic Deploys" button. This will pick up
+changes to the given branch and re-deploy the bot as needed.
+For most cases, you don't need the "wait for CI to pass before deploy"
+option as the bot is already tested here.
 
-      -----BEGIN RSA PRIVATE KEY-----
-      <some random characters>
-      -----END RSA PRIVATE KEY-----
+For the first time, you also need to manually deploy the bot by clicking
+"Deploy Branch".
 
-  the whole key, including the ``BEGIN`` and ``END`` header and footer should be
-  pasted into the field for the ``GITHUB_APP_PRIVATE_KEY`` environment variable.
+Once it is successfully deployed, go to "Settings" tab of the bot and you
+can customize its behavior using "Config Vars". This is the only
+custom configuration on Heroku and can be set through the Heroku admin
+interface, as mentioned. The main required environment variables
+(also see "Authentication" section below) are::
 
-* ``CRON_TOKEN`` - this should be set to a random string known only to the
-  person or people who need to run cron jobs manually. Some of the functionality
-  in the bot is not intended to be triggered by GitHub but instead by cron jobs.
+* ``GITHUB_APP_INTEGRATION_ID``, which should be set to the integration ID
+  provided by GitHub app (see "GitHub settings" section below) under
+  "General Settings", specifically "About... ID". For ``astropy-bot``,
+  the integration ID is currently 3400 (this is not a secret).
+
+* ``GITHUB_APP_PRIVATE_KEY``, which is generated by the GitHub app
+  (see "GitHub settings" section below).
+  This private key should look like:
+
+  > -----BEGIN RSA PRIVATE KEY-----
+  > <some random characters>
+  > -----END RSA PRIVATE KEY-----
+
+  The whole key, including the ``BEGIN`` and ``END`` header and footer
+  should be pasted into the field. To obtain this key for ``astropy-bot``
+  or one that you did not set up, please contact bot administrator.
+
+* ``CRON_TOKEN``, which should be set to a random string known
+  only to the person or people who need to run cron jobs manually.
+  Some of the functionality in ``astropy-bot`` is not intended to be
+  triggered by GitHub but instead by cron jobs.
   However, we don't want just anyone to be able to run these cron jobs, so
   this environment variable is the shared secret/password that allows certain
   actions to be triggered.
+  If you don't need the cron jobs, this needs to be set anyway due to the
+  way ``webapp.py`` is currently coded, so just set to some string like
+  "N/A".
 
-In addition to these environment variables, there are several other environment
-variables required for specific components of the bot, described in the sections
-below.
+In addition to these environment variables, there are several others
+required for specific components of the bot, as described in
+"Stale issue and pull request checkers" section below.
+These must also be set whether you wish to use them or not.
+
+#### Optional: GitHub settings (adding a separate instance of this bot)
+
+To add the bot to your own organization or account, go to your
+GitHub organization or account URL (not the repository) and
+then its settings. Then, click on "Developer settings" at the very bottom
+of the left navigation bar and the "New GitHub App" button on top right.
+
+Give your bot a "GitHub App name" as you want it to appear on GitHub
+activities. Under "Homepage URL", enter the GitHub repository URL where
+the bot code resides (either here or your fork, as appropriate).
+
+For the **User authorization callback URL**, it should be in the format of
+``http://<heroku-bot-name>.herokuapp.com/callback``. For ``astropy-bot``,
+this is http://astrochangebot.herokuapp.com/callback.
+
+For the **Webhook URL**, it should be in the format of
+``http://<heroku-bot-name>.herokuapp.com/hook``. For ``astropy-bot``,
+this is http://astrochangebot.herokuapp.com/hook
+
+You can ignore "Setup URL" and "Webhook secret". It would be useful to
+provide a description of what your bot intends to do but not required.
+
+The permissions of the app should be read/write access to **Commit statuses**,
+**Issues**, and **Pull requests**. Once you have checked these options,
+you will see extra "Subscribe to events" entries that you can check as well.
+For the events, it should be sufficient to only check **Status**, **Issues**,
+and **Pull Request**.
+
+It is up to you to choose whether you want to allow your GitHub app here to
+be installed only on your account or by any user or organization.
+
+Once you have clicked "Create GitHub App" button, you can go back to the app's
+"General" settings and upload a logo, which is basically a profile picture
+of your bot.
+
+For ``astropy-bot``, don't be tempted to re-generate a key from the
+GitHub app settings here. There is a key that is already generated that
+we should use; Ask @astrofrog if you would like to know the key.
+However, for your own bot, you can generate a private key for the app to avoid
+GitHub anonymous API limits; Save this key somewhere private and secure.
+
+For Astropy, the GitHub app for this bot is defined in the
+[Astropy organization settings](https://github.com/organizations/astropy/settings/apps/astropy-bot)
+(not everyone will be able to see this).
+
+#### Install the bot
+
+Go to ``https://github.com/apps/<github-app-name>``; For this bot, it is
+https://github.com/apps/astropy-bot . Then, click on the big green "Install"
+button. You can choose to install the bot on all or select repositories
+under your account or organization. It is recommended to only install it for
+select repositories by start typing a repository name and let auto-completion
+do the hard work for you (repeat this once per repository). Once you are done,
+click "Install".
+
+After a successfull installation, you will be taken to a
+``https://github.com/settings/installations/<installation-number>`` page.
+This page is also accessible from your account or organization settings in
+"Applications", specifically under "Installed GitHub Apps".
+You can change the installation settings by clicking the "Configure"
+button next to the listed app, if desired.
+
+For Astropy, the app can be added to specific repositories
+under the **Your installations** tab, by clicking on the gearbox next to
+**Astropy**, which goes to
+[this page](https://github.com/organizations/astropy/settings/installations/36238)
+(not everyone will be able to see this).
 
 ### Pull request checker
 
@@ -89,39 +182,60 @@ definition we are looking for *inactivity* rather than activity.
 These components can be configured via the following environment variables on
 Heroku:
 
-* ``STALE_ISSUE_CLOSE`` - this should be set to ``TRUE`` or ``FALSE``. If
-  ``FALSE``, this doesn't check for whether issues should be closed, only
-  whether the warning about closing should be posted. The intent is that this
-  should always be ``TRUE`` except the first time that this is run.
+* ``STALE_ISSUE_CLOSE``, which should be set to ``TRUE`` or ``FALSE``. If
+  ``FALSE``, this doesn't check for whether issues labeled as **Close?**
+  should be closed, only whether the warning about closing should be posted.
+  The intent is that this should always be ``TRUE`` except the first time that
+  this is run or if you never want your stale issues be closed.
+  This requires that you have a **Close?** label (case sensitive; include the
+  question mark) on each of your repositories that your bot watches.
 
-* ``STALE_ISSUE_WARN_SECONDS`` - the time in seconds from when an issue was
-  labelled as **Close?** in order to be warned that it will be closed.
+* ``STALE_ISSUE_WARN_SECONDS``, which is the time in seconds from when an
+  issue was labeled as **Close?** in order to be warned that it will be closed.
+  If you never want this warning, set it to a very high number
+  or do not apply the **Close?** label.
+  The recommended value is 12960000, which is approximately 5 months.
 
-* ``STALE_ISSUE_CLOSE_SECONDS`` - the time in seconds from when an issue was
-  labelled as **Close?** in order to be considered ready for closing. This
-  should be larger than ``STALE_ISSUE_WARN_SECONDS``.
+* ``STALE_ISSUE_CLOSE_SECONDS``, which is the time in seconds from when an
+  issue was labeled as **Close?** in order to be considered ready for closing.
+  This should be larger than ``STALE_ISSUE_WARN_SECONDS``.
+  This setting is only relevant if ``STALE_ISSUE_CLOSE`` is set to ``TRUE``.
+  The recommended value is 15552000, which is approximately 6 months.
 
-* ``STALE_PULL_REQUEST_CLOSE`` - this should be set to ``TRUE`` or ``FALSE``. If
-  ``FALSE``, this doesn't check for whether pull requests should be closed, only
-  whether the warning about closing should be posted. The intent is that this
-  should always be ``TRUE`` except the first time that this is run.
+* ``STALE_PULL_REQUEST_CLOSE``, which should be set to ``TRUE`` or ``FALSE``.
+  If ``FALSE``, this doesn't check for whether pull requests should be closed,
+  only whether the warning about closing should be posted. The intent is that
+  this should always be ``TRUE`` except the first time that this is run or
+  if you never want your stale pull requests be closed.
 
-* ``STALE_PULL_REQUEST_WARN_SECONDS`` - the time in seconds from the last commit in
-  order to be warned that it will be closed.
+* ``STALE_PULL_REQUEST_WARN_SECONDS``, which is the time in seconds from the
+  last commit in order to be warned that it will be closed.
+  If you never want this warning, set it to a very high number.
+  The recommended value is 12960000, which is approximately 5 months.
 
-* ``STALE_PULL_REQUEST_CLOSE_SECONDS`` - the time in seconds from the last commit in
-  order to be considered ready for closing. This should be larger than
-  ``STALE_PULL_REQUEST_WARN_SECONDS``.
+* ``STALE_PULL_REQUEST_CLOSE_SECONDS``, which is the time in seconds from the
+  last commit in order to be considered ready for closing unless
+  a **keep-open** is attached to the pull request.
+  This should be larger than ``STALE_PULL_REQUEST_WARN_SECONDS``. This
+  setting is only relevant if ``STALE_PULL_REQUEST_CLOSE`` is set to ``TRUE``.
+  The recommended value is 15552000, which is approximately 6 months.
 
 For issues, removing the **Close?** label and adding it back resets the clock.
 For pull requests, adding a new commit resets the clock, while adding the
 **keep-open** label means that this pull request will not be touched by the bot.
 
-To run these checks, you can access http://astrochangebot.herokuapp.com/close_stale_issues and http://astrochangebot.herokuapp.com/close_stale_pull_requests using a POST request and with the following parameters encoded in JSON:
+To run these checks, you can access
+http://astrochangebot.herokuapp.com/close_stale_issues and
+http://astrochangebot.herokuapp.com/close_stale_pull_requests
+using a POST request and with the following parameters encoded in JSON:
 
-* ``'repository'``: the name of the repository to run the checks for, including the owner (e.g. ``astropy/astropy``)
-* ``'cron_token'``: this should be the same as the ``CRON_TOKEN`` environment variable
-* ``'installation'``: this should be the installation ID (see the **Authentication** section). For the astropy organization repositories, this is 37176.
+* ``'repository'``: the name of the repository to run the checks for,
+  including the owner (e.g. ``astropy/astropy``)
+* ``'cron_token'``: this should be the same as the ``CRON_TOKEN``
+  environment variable
+* ``'installation'``: this should be the installation ID
+  (see the **Authentication** section). For the Astropy organization
+  repositories, this is 36238.
 
 An example for how to do this with the requests package is:
 
@@ -138,10 +252,12 @@ requests.post(URL, json=data)
 ### GitHub API
 
 The different components of the bot interact with GitHub via a set of helper
-classes that live in [changebot/github/github_api.py](changebot/github/github_api.py).
-These classes are ``RepoHandler``, ``IssueHandler``, and ``PullRequestHandler``. It
-is possible to try these out locally, at least for the parts of the GitHub API that
-do not require authentication. For example, the following should work:
+classes that live in
+[changebot/github/github_api.py](changebot/github/github_api.py).
+These classes are ``RepoHandler``, ``IssueHandler``, and
+``PullRequestHandler``. It is possible to try these out locally, at least for
+the parts of the GitHub API that do not require authentication.
+For example, the following should work:
 
 ```python
 >>> from changebot.github.github_api import RepoHandler, IssueHandler, PullRequestHandler
@@ -158,9 +274,16 @@ do not require authentication. For example, the following should work:
 1506374526.0
 ```
 
-However since these are being run un-authenticated, you may quickly run into the GitHub public API limits. If you are interested in authenticating locally, see the **Authentication** section below.
+However since these are being run un-authenticated, you may quickly run into
+the GitHub public API limits. If you are interested in authenticating locally,
+see the **Authentication** section below.
 
-Code-wise, the authentication of the app is handled in the [changebot/github/github_auth.py](changebot/github/github_auth.py) file - the main function from there that is used in [changebot/github/github_api.py](changebot/github/github_api.py) is the ``github_request_headers`` function which returns headers for requests that contain the appropriate tokens.
+Code-wise, the authentication of the app is handled in the
+[changebot/github/github_auth.py](changebot/github/github_auth.py) file -
+the main function from there that is used in
+[changebot/github/github_api.py](changebot/github/github_api.py) is the
+ ``github_request_headers`` function which returns headers for requests
+that contain the appropriate tokens.
 
 ### Authentication
 
@@ -168,13 +291,11 @@ In some cases, you may want to test the bot locally as if it was running on
 Heroku. In order to do this you will need to make sure you have all the
 environment variables described above set correctly.
 
-The main ones to get right as far as authentication is concerned are:
+The main ones to get right as far as authentication is concerned are as
+follows (see "Heroku settings" section above for further descriptions):
 
-* ``GITHUB_APP_INTEGRATION_ID`` - this ID can be found at the main GitHub app
-  [settings page](https://github.com/organizations/astropy/settings/apps/astropy-bot). It should be 3400 at the time of writing this.
-* ``GITHUB_APP_PRIVATE_KEY`` - don't be tempted to re-generate a key from the
-  GitHub app settings. There is a key that is already generated that we should
-  use - ask @astrofrog if you would like to know the key.
+* ``GITHUB_APP_INTEGRATION_ID``
+* ``GITHUB_APP_PRIVATE_KEY``
 
 The last thing you will need is an **Installation ID** - a GitHub app can be
 linked to different GitHub accounts, and for each account or organization, it
@@ -202,4 +323,5 @@ in your home directory, so you will need to rename this file temporarily.
 
 ### Requirements
 
-This app requires Python 3.6 to run, and dependencies are listed in ``requirements.txt``
+This app requires Python 3.6 to run, and dependencies are listed in
+``requirements.txt``
