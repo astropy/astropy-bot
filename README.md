@@ -69,9 +69,11 @@ interface, as mentioned. The main required environment variables
   (see "GitHub settings" section below).
   This private key should look like:
 
-  > -----BEGIN RSA PRIVATE KEY-----
-  > <some random characters>
-  > -----END RSA PRIVATE KEY-----
+  ```
+  -----BEGIN RSA PRIVATE KEY-----
+  <some random characters>
+  -----END RSA PRIVATE KEY-----
+  ```
 
   The whole key, including the ``BEGIN`` and ``END`` header and footer
   should be pasted into the field. To obtain this key for ``astropy-bot``
