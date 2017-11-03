@@ -59,7 +59,7 @@ def check_changelog_consistency(repo_handler, pr_handler):
         else:
             break
     else:
-        raise FileNotFoundError("CHANGES.rst")
+        return ["This repository does not appear to have a change log!"]
 
     return review_changelog(pr_handler.number, changelog,
                             pr_handler.milestone, pr_handler.labels)
