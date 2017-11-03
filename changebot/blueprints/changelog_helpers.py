@@ -42,6 +42,10 @@ def find_prs_in_changelog_by_section(content):
             subcontent += line
         previous = line
 
+    if subcontent and version is not None:
+        for pr in find_prs_in_changelog(subcontent):
+            changelog_prs[int(pr)] = version
+
     return changelog_prs
 
 
