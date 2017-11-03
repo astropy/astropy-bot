@@ -184,6 +184,10 @@ The main logic is defined in
 If ``CHANGES.rst``, ``CHANGES``, or ``CHANGES.md`` file does not exist in the
 repository, bot will not comment at all.
 
+For repositories that do not use a changelog, this checker can be disabled
+by defining ``changelog_check: false`` in ``.astropybot.yml`` at the top
+level of the repository.
+
 ### Stale issue and pull request checkers
 
 The components to check for stale issues and pull requests are intended to be
@@ -220,6 +224,11 @@ Heroku:
   only whether the warning about closing should be posted. The intent is that
   this should always be ``TRUE`` except the first time that this is run or
   if you never want your stale pull requests be closed.
+
+  For repositories that do not want to ever close stale pull requests,
+  this feature can be permanently disabled by defining
+  ``autoclose_stale_pull_request: false`` in ``.astropybot.yml`` at the top
+  level of the repository.
 
 * ``STALE_PULL_REQUEST_WARN_SECONDS``, which is the time in seconds from the
   last commit in order to be warned that it will be closed.
