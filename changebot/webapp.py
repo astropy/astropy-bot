@@ -16,7 +16,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app)
 app.integration_id = int(os.environ['GITHUB_APP_INTEGRATION_ID'])
 app.private_key = os.environ['GITHUB_APP_PRIVATE_KEY']
 app.cron_token = os.environ['CRON_TOKEN']
-app.cron_token = os.environ.get('STATUS_TOKEN', None)
+app.status_token = os.environ.get('STATUS_TOKEN', None)
 app.stale_issue_close = os.environ['STALE_ISSUE_CLOSE'].lower() == 'true'
 app.stale_issue_close_seconds = float(os.environ['STALE_ISSUE_CLOSE_SECONDS'])
 app.stale_issue_warn_seconds = float(os.environ['STALE_ISSUE_WARN_SECONDS'])
