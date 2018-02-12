@@ -323,8 +323,8 @@ The last thing you will need is an **Installation ID** - a GitHub app can be
 linked to different GitHub accounts, and for each account or organization, it
 has a unique ID. You can find out this ID by going to **Your installations** and
 then clicking on the settings box next to the account where you have a test
-repository you want to interact with. The URL of the page you go to will look
-like:
+repository you want to interact with. The URL of the page you go to will contain
+the Installation ID and look like:
 
     https://github.com/settings/installations/36238
 
