@@ -29,15 +29,19 @@ def circleci_handler():
         return 'Payload missing {}'.format(' '.join(required_keys - payload.keys()))
 
     if payload['status'] == 'success':
+        print("Recieved success payload")
         artifacts = get_artifacts_from_build(payload)
         url = get_documentation_url_from_artifacts(artifacts)
 
         if url:
             repo = f"{payload['username']}/{payload['reponame']}"
+            print(f"Payload for repo {repo}")
             if repo in repos:
                 set_commit_status(repo, repos[repo],
                                   payload['vcs_revision'], "success",
                                   "Click details to preview the documentation build", url)
+            else:
+                print("Can't find repo")
 
     return "All good"
 
