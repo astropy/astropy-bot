@@ -11,6 +11,16 @@ circleci = Blueprint('circleci', __name__)
 
 @circleci.route('/circleci', methods=['POST'])
 def circleci_handler():
+    # Get installation id
+    url = f'{HOST}/app/installations'
+    headers = {}
+    headers['Authorization'] = 'Bearer {0}'.format(get_json_web_token())
+    headers['Accept'] = 'application/vnd.github.machine-man-preview+json'
+    print(headers)
+    resp = requests.get(HOST, headers=headers)
+    print(resp)
+    return "done"
+
     if not request.data:
         print("No payload received")
 
@@ -26,15 +36,6 @@ def circleci_handler():
     if not required_keys.issubset(payload.keys()):
         return 'Payload missing {}'.format(' '.join(required_keys - payload.keys()))
 
-    # Get installation id
-
-    url = f'{HOST}/app/installations'
-    headers = {}
-    headers['Authorization'] = 'Bearer {0}'.format(get_json_web_token())
-    headers['Accept'] = 'application/vnd.github.machine-man-preview+json'
-    resp = requests.get(HOST, headers=headers)
-    print(resp)
-    return "done"
 
     if payload['status'] == 'success':
         artifacts = get_artifacts_from_build(payload)
