@@ -1,40 +1,17 @@
 import json
 import requests
 from changebot.github.github_api import HOST
-from changebot.github.github_auth import github_request_headers, get_json_web_token, get_installation_token
+from changebot.github.github_auth import github_request_headers, repo_to_installationid_mapping
 
-
-from flask import Blueprint, request, current_app
+from flask import Blueprint, request
 
 circleci = Blueprint('circleci', __name__)
-
-
-def build_repo_to_install_mapping():
-    url = 'https://api.github.com/app/installations'
-    headers = {}
-    headers['Authorization'] = 'Bearer {0}'.format(get_json_web_token())
-    headers['Accept'] = 'application/vnd.github.machine-man-preview+json'
-    resp = requests.get(url, headers=headers)
-    payload = resp.json()
-
-    ids = [p['id'] for p in payload]
-
-    repos = {}
-    for iid in ids:
-        headers = github_request_headers(iid)
-        resp = requests.get(f'{HOST}/installation/repositories', headers=headers)
-        payload = resp.json()
-        print(payload)
-        for repo in payload['repositories']:
-            repos[repo['full_name']] = iid
-
-    return repos
 
 
 @circleci.route('/circleci', methods=['POST'])
 def circleci_handler():
     # Get installation id
-    repos = build_repo_to_install_mapping()
+    repos = repo_to_installationid_mapping()
 
     if not request.data:
         print("No payload received")
