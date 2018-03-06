@@ -8,13 +8,13 @@ from changebot.github.github_auth import github_request_headers
 
 from flask import Blueprint, request, current_app
 
-commit_status = Blueprint('commit_status', __name__)
+circleci = Blueprint('circleci', __name__)
 
 
-@commit_status.route('/circleci', methods=['POST'])
+@circleci.route('/circleci', methods=['POST'])
 def circleci_handler():
     if not request.data:
-        print("No payload recieved")
+        print("No payload received")
 
     payload = json.loads(request.data)
 
@@ -24,12 +24,12 @@ def circleci_handler():
                      'reponame',
                      'status'}
 
-    optional_keys = {}
 
     print(payload)
     if not required_keys.issubset(payload.keys()):
         return 'Payload missing {}'.format(' '.join(required_keys - payload.keys()))
 
+    # optional_keys = {}
     # invalid_keys = payload.keys() - (required_keys | optional_keys)
     # if invalid_keys:
     #     return f"Received unknown values {' '.join(invalid_keys)}."
