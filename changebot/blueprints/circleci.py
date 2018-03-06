@@ -34,7 +34,7 @@ def circleci_handler():
     headers['Accept'] = 'application/vnd.github.machine-man-preview+json'
     resp = requests.get(HOST, headers=headers)
     print(resp)
-    return
+    return "done"
 
     if payload['status'] == 'success':
         artifacts = get_artifacts_from_build(payload)
