@@ -1,7 +1,7 @@
 import json
 import requests
 from changebot.github.github_api import HOST
-from changebot.github.github_auth import github_request_headers, get_json_web_token
+from changebot.github.github_auth import github_request_headers, get_json_web_token, get_installation_token
 
 
 from flask import Blueprint, request, current_app
@@ -19,6 +19,9 @@ def circleci_handler():
     print(headers)
     resp = requests.get(HOST, headers=headers)
     print(resp)
+
+    print(get_installation_token(100999))
+
     return "done"
 
     if not request.data:
