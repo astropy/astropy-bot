@@ -1,11 +1,13 @@
 import json
 import requests
-from changebot.github.github_api import HOST
 from changebot.github.github_auth import github_request_headers, repo_to_installationid_mapping
 
-from flask import Blueprint, request
+from flask import Blueprint, request, current_app
 
 circleci = Blueprint('circleci', __name__)
+
+
+HOST = "https://api.github.com"
 
 
 @circleci.route('/circleci', methods=['POST'])
@@ -28,14 +30,14 @@ def circleci_handler():
     if not required_keys.issubset(payload.keys()):
         return 'Payload missing {}'.format(' '.join(required_keys - payload.keys()))
 
+    repo = f"{payload['username']}/{payload['reponame']}"
+    print(f"Got payload for repo {repo}")
     if payload['status'] == 'success':
-        print("Recieved success payload")
         artifacts = get_artifacts_from_build(payload)
         url = get_documentation_url_from_artifacts(artifacts)
 
         if url:
-            repo = f"{payload['username']}/{payload['reponame']}"
-            print(f"Payload for repo {repo}")
+            print("Got artifact url")
             if repo in repos:
                 set_commit_status(repo, repos[repo],
                                   payload['vcs_revision'], "success",
@@ -65,7 +67,7 @@ def set_commit_status(repository, installation, commit_hash, state, description,
 
     headers = github_request_headers(installation)
 
-    set_status(repository, commit_hash, state, description, "Documentation",
+    set_status(repository, commit_hash, state, description, current_app.name,
                headers=headers, target_url=target_url)
 
 

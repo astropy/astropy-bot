@@ -12,6 +12,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app)
 
 app.integration_id = int(os.environ['GITHUB_APP_INTEGRATION_ID'])
 app.private_key = os.environ['GITHUB_APP_PRIVATE_KEY']
+app.name = os.environ.get("GILES_NAME", "Giles")
 
 app.register_blueprint(circleci)
 
