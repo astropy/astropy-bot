@@ -12,7 +12,7 @@ circleci = Blueprint('circleci', __name__)
 @circleci.route('/circleci', methods=['POST'])
 def circleci_handler():
     # Get installation id
-    url = f'{HOST}/app/installations'
+    url = 'https://api.github.com/app'
     headers = {}
     headers['Authorization'] = 'Bearer {0}'.format(get_json_web_token())
     headers['Accept'] = 'application/vnd.github.machine-man-preview+json'
