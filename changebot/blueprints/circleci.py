@@ -1,10 +1,10 @@
 import json
 import requests
 from changebot.github.github_api import HOST
-from changebot.github.github_auth import github_request_headers
+from changebot.github.github_auth import github_request_headers, get_json_web_token
 
 
-from flask import Blueprint, request
+from flask import Blueprint, request, current_app
 
 circleci = Blueprint('circleci', __name__)
 
@@ -26,12 +26,22 @@ def circleci_handler():
     if not required_keys.issubset(payload.keys()):
         return 'Payload missing {}'.format(' '.join(required_keys - payload.keys()))
 
+    # Get installation id
+
+    url = f'{HOST}/installation/repositories'
+    headers = {}
+    headers['Authorization'] = 'Bearer {0}'.format(get_json_web_token())
+    headers['Accept'] = 'application/vnd.github.machine-man-preview+json'
+    resp = requests.get(HOST, headers=headers)
+    print(resp)
+    return
+
     if payload['status'] == 'success':
         artifacts = get_artifacts_from_build(payload)
         url = get_documentation_url_from_artifacts(artifacts)
-        installation = 86691
+
         if url:
-            set_commit_status(f"{payload['username']}/{payload['reponame']}", installation,
+            set_commit_status(f"{payload['username']}/{payload['reponame']}", current_app.installation_id,
                               payload['vcs_revision'], "success",
                               "Click details to preview the documentation build", url)
 
