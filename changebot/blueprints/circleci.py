@@ -28,7 +28,7 @@ def circleci_handler():
 
     # Get installation id
 
-    url = f'{HOST}/installation/repositories'
+    url = f'{HOST}/app/installations'
     headers = {}
     headers['Authorization'] = 'Bearer {0}'.format(get_json_web_token())
     headers['Accept'] = 'application/vnd.github.machine-man-preview+json'
