@@ -9,20 +9,32 @@ from flask import Blueprint, request, current_app
 circleci = Blueprint('circleci', __name__)
 
 
-@circleci.route('/circleci', methods=['POST'])
-def circleci_handler():
-    # Get installation id
-    url = 'https://api.github.com/app'
+def build_repo_to_install_mapping():
+    url = 'https://api.github.com/app/installations'
     headers = {}
     headers['Authorization'] = 'Bearer {0}'.format(get_json_web_token())
     headers['Accept'] = 'application/vnd.github.machine-man-preview+json'
-    print(headers)
-    resp = requests.get(HOST, headers=headers)
-    print(resp)
+    resp = requests.get(url, headers=headers)
+    payload = resp.json()
 
-    print(get_installation_token(100999))
+    ids = [p['id'] for p in payload]
 
-    return "done"
+    repos = {}
+    for iid in ids:
+        headers = github_request_headers(iid)
+        resp = requests.get(f'{HOST}/installation/repositories', headers=headers)
+        payload = resp.json()
+        print(payload)
+        for repo in payload['repositories']:
+            repos[repo['full_name']] = iid
+
+    return repos
+
+
+@circleci.route('/circleci', methods=['POST'])
+def circleci_handler():
+    # Get installation id
+    repos = build_repo_to_install_mapping()
 
     if not request.data:
         print("No payload received")
@@ -39,13 +51,13 @@ def circleci_handler():
     if not required_keys.issubset(payload.keys()):
         return 'Payload missing {}'.format(' '.join(required_keys - payload.keys()))
 
-
     if payload['status'] == 'success':
         artifacts = get_artifacts_from_build(payload)
         url = get_documentation_url_from_artifacts(artifacts)
 
         if url:
-            set_commit_status(f"{payload['username']}/{payload['reponame']}", current_app.installation_id,
+            repo = f"{payload['username']}/{payload['reponame']}"
+            set_commit_status(repo, repos[repo],
                               payload['vcs_revision'], "success",
                               "Click details to preview the documentation build", url)
 
