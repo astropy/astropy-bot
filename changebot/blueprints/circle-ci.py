@@ -11,36 +11,34 @@ from flask import Blueprint, request, current_app
 commit_status = Blueprint('commit_status', __name__)
 
 
-@commit_status.route('/commit_status', methods=['POST'])
-def commit_status_handler():
+@commit_status.route('/circleci', methods=['POST'])
+def circleci_handler():
     if not request.data:
         print("No payload recieved")
 
     payload = json.loads(request.data)
-    required_keys = {'repository',
-                     'status_token',
-                     'installation',
-                     'commit_hash',
-                     'state',
-                     'description'}
 
-    optional_keys = {'target_url'}
+    # Validate we have the keys we need, otherwise ignore the push
+    required_keys = {'vcs_revision',
+                     'username',
+                     'reponame',
+                     'status'}
+
+    optional_keys = {}
 
     print(payload)
     if not required_keys.issubset(payload.keys()):
         return 'Payload missing {}'.format(' '.join(required_keys - payload.keys()))
 
-    invalid_keys = payload.keys() - (required_keys | optional_keys)
-    if invalid_keys:
-        return f"Received unknown values {' '.join(invalid_keys)}."
+    # invalid_keys = payload.keys() - (required_keys | optional_keys)
+    # if invalid_keys:
+    #     return f"Received unknown values {' '.join(invalid_keys)}."
 
     if "target_url" not in payload:
         payload['target_url'] = None
 
-    if not current_app.status_token or payload.pop('status_token') != current_app.status_token:
-        return "Incorrect status_token"
 
-    set_commit_status(**payload)
+    # set_commit_status(**payload)
 
     return "All good"
 
