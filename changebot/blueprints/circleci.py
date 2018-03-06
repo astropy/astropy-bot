@@ -34,9 +34,10 @@ def circleci_handler():
 
         if url:
             repo = f"{payload['username']}/{payload['reponame']}"
-            set_commit_status(repo, repos[repo],
-                              payload['vcs_revision'], "success",
-                              "Click details to preview the documentation build", url)
+            if repo in repos:
+                set_commit_status(repo, repos[repo],
+                                  payload['vcs_revision'], "success",
+                                  "Click details to preview the documentation build", url)
 
     return "All good"
 
