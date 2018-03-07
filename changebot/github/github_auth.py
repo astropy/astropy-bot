@@ -11,6 +11,8 @@ import requests
 TEN_MIN = datetime.timedelta(minutes=9)
 ONE_MIN = datetime.timedelta(minutes=1)
 
+repo_installation_id_mapping = {}
+
 # TODO: need to change global variable to use redis
 
 json_web_token = None
@@ -113,7 +115,16 @@ def github_request_headers(installation):
     return headers
 
 
-def repo_to_installationid_mapping():
+def get_installation_id_for_repo(repo):
+    global repo_installation_id_mapping
+
+    if repo not in repo_installation_id_mapping:
+        repo_installation_id_mapping = generate_repo_id_map()
+
+    return repo_installation_id_mapping.get(repo, None)
+
+
+def generate_repo_id_map():
     """
     Returns a dictionary mapping full repository name to installation id.
     """

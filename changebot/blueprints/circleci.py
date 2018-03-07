@@ -1,6 +1,6 @@
 import json
 import requests
-from changebot.github.github_auth import github_request_headers, repo_to_installationid_mapping
+from giles.github.github_auth import github_request_headers, get_installation_id_for_repo
 
 from flask import Blueprint, request, current_app
 
@@ -27,21 +27,20 @@ def circleci_handler():
     if not required_keys.issubset(payload.keys()):
         return 'Payload missing {}'.format(' '.join(required_keys - payload.keys()))
 
+    repo = f"{payload['username']}/{payload['reponame']}"
+
     if payload['status'] == 'success':
         artifacts = get_artifacts_from_build(payload)
         url = get_documentation_url_from_artifacts(artifacts)
 
         if url:
             # Get installation id
-            repos = repo_to_installationid_mapping()
-            repo = f"{payload['username']}/{payload['reponame']}"
-            print(f"Got url for repo {repo}")
-            if repo in repos:
-                set_commit_status(repo, repos[repo],
-                                  payload['vcs_revision'], "success",
-                                  "Click details to preview the documentation build", url)
-            else:
-                print("Can't find repo")
+            installation_id = get_installation_id_for_repo(repo)
+            if not installation_id:
+                return f"Not installed for repo {repo}"
+            set_commit_status(repo, installation_id,
+                              payload['vcs_revision'], "success",
+                              "Click details to preview the documentation build", url)
 
     return "All good"
 
