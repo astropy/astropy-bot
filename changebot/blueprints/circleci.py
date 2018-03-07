@@ -12,9 +12,6 @@ HOST = "https://api.github.com"
 
 @circleci.route('/circleci', methods=['POST'])
 def circleci_handler():
-    # Get installation id
-    repos = repo_to_installationid_mapping()
-
     if not request.data:
         print("No payload received")
 
@@ -30,14 +27,15 @@ def circleci_handler():
     if not required_keys.issubset(payload.keys()):
         return 'Payload missing {}'.format(' '.join(required_keys - payload.keys()))
 
-    repo = f"{payload['username']}/{payload['reponame']}"
-    print(f"Got payload for repo {repo}")
     if payload['status'] == 'success':
         artifacts = get_artifacts_from_build(payload)
         url = get_documentation_url_from_artifacts(artifacts)
 
         if url:
-            print("Got artifact url")
+            # Get installation id
+            repos = repo_to_installationid_mapping()
+            repo = f"{payload['username']}/{payload['reponame']}"
+            print(f"Got url for repo {repo}")
             if repo in repos:
                 set_commit_status(repo, repos[repo],
                                   payload['vcs_revision'], "success",
