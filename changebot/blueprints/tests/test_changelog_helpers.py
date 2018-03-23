@@ -16,7 +16,7 @@ def test_review_good_changelog():
 - Fixed a bug some other person made. Not my fault. [#2]
     """
 
-    issues = review_changelog(10, content, 'v1.1.0', [])
+    issues = review_changelog(10, content, True, 'v1.1.0', [])
     assert len(issues) == 0
 
 
@@ -28,7 +28,7 @@ def test_review_short_changelog():
 - It's a whole new thing here now. [#1]
     """
 
-    issues = review_changelog(1, content, 'v1.0.0', [])
+    issues = review_changelog(1, content, True, 'v1.0.0', [])
     assert len(issues) == 0
 
 
@@ -69,7 +69,7 @@ foo.frob.blurg
 - My code never has bugs. [#2]
     """
 
-    issues = review_changelog(12, content, 'v1.1.0', [])
+    issues = review_changelog(12, content, True, 'v1.1.0', [])
     assert len(issues) == 0
 
 
@@ -87,5 +87,20 @@ def test_review_missing_with_tag(label):
 - Fixed a bug some other person made. Not my fault. [#2]
     """
 
-    issues = review_changelog(11, content, 'v1.1.0', [label])
+    issues = review_changelog(11, content, False, 'v1.1.0', [label])
     assert len(issues) == 0
+
+
+# https://github.com/astropy/astropy-bot/issues/59
+def test_review_unnecessary_changelog():
+    content = """
+1.1.0 (unreleased)
+==================
+
+- I made some changes. They were good. [#10]
+    """
+
+    issues = review_changelog(11, content, True, 'v1.1.0',
+                              ['no-changelog-entry-needed'])
+    ans = "Changelog entry present but **no-changelog-entry-needed** label set"
+    assert len(issues) == 1 and issues[0] == ans

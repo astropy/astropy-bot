@@ -50,8 +50,9 @@ def find_prs_in_changelog_by_section(content):
 
 
 def check_changelog_consistency(repo_handler, pr_handler):
+    acceptable_names = ('CHANGES.rst', 'CHANGES', 'CHANGES.md')
 
-    for filename in ('CHANGES.rst', 'CHANGES', 'CHANGES.md'):
+    for filename in acceptable_names:
         try:
             changelog = repo_handler.get_file_contents(filename)
         except FileNotFoundError:
@@ -61,11 +62,13 @@ def check_changelog_consistency(repo_handler, pr_handler):
     else:
         return ["This repository does not appear to have a change log!"]
 
-    return review_changelog(pr_handler.number, changelog,
+    is_modified = pr_handler.has_modified(acceptable_names)
+
+    return review_changelog(pr_handler.number, changelog, is_modified,
                             pr_handler.milestone, pr_handler.labels)
 
 
-def review_changelog(pull_request, changelog, milestone, labels):
+def review_changelog(pull_request, changelog, is_modified, milestone, labels):
 
     issues = []
 
@@ -80,7 +83,7 @@ def review_changelog(pull_request, changelog, milestone, labels):
                           "with milestone ({1})".format(sections[pull_request], milestone))
 
     if 'no-changelog-entry-needed' in labels:
-        if changelog_entry:
+        if changelog_entry or is_modified:
             issues.append("Changelog entry present but **no-changelog-entry-needed** label set")
     elif 'Affects-dev' not in labels:
         if not changelog_entry:
