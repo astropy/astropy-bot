@@ -154,7 +154,7 @@ class RepoHandler(object):
         cfg = cfg_cache.get(cfg_cache_key, {})
         return cfg.get(cfg_key, cfg_default)
 
-    def get_issues(self, state, labels, exclude_pr=True):
+    def get_issues(self, state, labels=None, exclude_pr=True):
         """
         Get a list of issues.
 
@@ -176,7 +176,9 @@ class RepoHandler(object):
 
         """
         url = f'{HOST}/repos/{self.repo}/issues'
-        kwargs = {'state': state, 'labels': labels}
+        kwargs = {'state': state}
+        if labels is not None:
+            kwargs['labels'] = labels
         r = requests.get(url, kwargs)
         result = r.json()
         if exclude_pr:
