@@ -294,7 +294,9 @@ class IssueHandler(object):
         """
 
         data = {}
-        data['body'] = _insert_special_message(body)
+        if not body.endswith('.......\n'):
+            body = _insert_special_message(body)
+        data['body'] = body
 
         if comment_id is None:
             url = self._url_issue_comment
@@ -316,6 +318,7 @@ class IssueHandler(object):
             def filter_keep(message):
                 return True
         comments = paged_github_json_request(self._url_issue_comment, headers=self._headers)
+        # TODO: Add backward-compat logic to return body content
         return [comment['id'] for comment in comments if comment['user']['login'] == login and filter_keep(comment['body'])]
 
     @property
@@ -525,7 +528,8 @@ def _insert_special_message(body):
         except Exception as e:
             q = str(e)  # Need a way to find out what went wrong
 
-        return body + f'\n*{q}*\n'
+        # NOTE: The trailing 7 dots + line break are important. Don't remove!
+        return body + f'\n*{q}*.......\n'
 
     # Another non-special day
     else:
