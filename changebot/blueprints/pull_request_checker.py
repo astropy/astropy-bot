@@ -100,6 +100,9 @@ def process_changelog_consistency(repository, number, installation):
     if not repo_handler.get_config_value('changelog_check', True):
         return "Repo owner does not want to check change log"
 
+    # TODO: Also grab existing comment content and retain any special message
+    #       body.endwith('.......\n')
+    #       Then expand this logic to other blueprints (look for submit_comment)
     # Find previous comments by this app
     comment_ids = pr_handler.find_comments(
         'astropy-bot[bot]', filter_keep=is_changelog_message)
