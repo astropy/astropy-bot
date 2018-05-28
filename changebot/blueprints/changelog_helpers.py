@@ -50,7 +50,7 @@ def find_prs_in_changelog_by_section(content):
 
 
 def check_changelog_consistency(repo_handler, pr_handler):
-    acceptable_names = ('CHANGES.rst', 'CHANGES', 'CHANGES.md')
+    acceptable_names = ('CHANGES.rst', 'CHANGES', 'CHANGES.md', 'CHANGELOG.rst', 'CHANGELOG', 'CHANGELOG.md')
 
     for filename in acceptable_names:
         try:
