@@ -28,8 +28,9 @@ app.stale_pull_requests_warn_seconds = float(os.environ['STALE_PULL_REQUEST_WARN
 Configuration for the pull request checker.
 """
 
+# This string is formatted with the pr_handler and repo_handler objects
 app.pull_request_prolog = re.sub('(\w+)\n', r'\1', """
-Hi there @{user} :wave: - thanks for the pull request! I'm just
+Hi there @{pr_handler.user} :wave: - thanks for the pull request! I'm just
  a friendly :robot: that checks for
  issues related to the changelog and making sure that this
  pull request is milestoned and labeled correctly. This is

@@ -30,11 +30,11 @@ def process_changelog_consistency(pr_handler, repo_handler):
 
     # No-op if user so desires
     if not repo_handler.get_config_value('changelog_check', True):
-        return "Repo owner does not want to check change log"
+        return [], None
 
     # Construct message
 
-    message = current_app.pull_request_prolog.format(user=pr_handler.user)
+    message = ''
     approve = False  # This is so that WIP and EXP shall not pass
 
     if 'Work in progress' in pr_handler.labels:

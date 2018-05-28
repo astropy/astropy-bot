@@ -63,8 +63,10 @@ def hook():
     else:
         return "Not an issue or pull request"
 
-    repository = payload['repository']['full_name']
+    return process_pull_request(payload['repository']['full_name'], number, installation)
 
+
+def process_pull_request(repository, number, installation):
     # TODO: cache handlers and invalidate the internal cache of the handlers on
     # certain events.
     pr_handler = PullRequestHandler(repository, number, installation)
@@ -93,16 +95,20 @@ def hook():
     status = True  # True is passing
     for function in PULL_REQUEST_CHECKS:
         f_comments, f_status = function(pr_handler, repo_handler)
-        if status is not None:
+        if f_status is not None:
             set_status = True
             status = status and f_status
         comments += f_comments
 
     if comments:
-        message = current_app.pull_request_prolog + ''.join(comments) + current_app.pull_request_epilog
+        message = current_app.pull_request_prolog.format(pr_handler=pr_handler, repo_handler=repo_handler)
+        message += ''.join(comments) + current_app.pull_request_epilog
 
         comment_url = pr_handler.submit_comment(message, comment_id=comment_id,
                                                 return_url=True)
+    else:
+        comment_url = None
+        message = ''
 
     if set_status:
         if status:
