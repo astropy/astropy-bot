@@ -6,8 +6,7 @@ import pytest
 from changebot.webapp import app
 from changebot.github.github_api import RepoHandler, PullRequestHandler
 from changebot.blueprints.pull_request_checker import process_pull_request
-from changebot.blueprints.changelog_checker import (process_changelog_consistency,
-                                                    CHANGELOG_NOT_DONE,
+from changebot.blueprints.changelog_checker import (CHANGELOG_NOT_DONE,
                                                     CHANGELOG_BAD_LIST,
                                                     CHANGELOG_BAD_EPILOGUE,
                                                     CHANGELOG_GOOD)

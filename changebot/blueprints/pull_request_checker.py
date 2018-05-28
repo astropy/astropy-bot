@@ -1,10 +1,7 @@
 import json
-import os
-import re
 
 from flask import Blueprint, request, current_app
 
-from changebot.blueprints.changelog_helpers import check_changelog_consistency
 from changebot.github.github_api import RepoHandler, PullRequestHandler
 
 pull_request_checker = Blueprint('pull_request_checker', __name__)

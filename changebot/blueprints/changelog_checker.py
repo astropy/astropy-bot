@@ -1,8 +1,6 @@
 import os
 import re
 
-from flask import current_app
-
 from changebot.blueprints.changelog_helpers import check_changelog_consistency
 
 from .pull_request_checker import pull_request_check
