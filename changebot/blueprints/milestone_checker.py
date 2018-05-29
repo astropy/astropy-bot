@@ -10,5 +10,7 @@ def process_milestone(pr_handler, repo_handler):
     """
     if not pr_handler.milestone:
             pr_handler.set_status('failure', 'This pull request does not have a milestone set.', current_app.bot_username + ": milestone")
+    else:
+            pr_handler.set_status('success', 'This pull request has a milestone set.', current_app.bot_username + ": milestone")
 
     return [], None
