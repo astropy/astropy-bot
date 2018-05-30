@@ -104,6 +104,11 @@ def process_pull_request(repository, number, installation):
         comment_url = pr_handler.submit_comment(message, comment_id=comment_id,
                                                 return_url=True)
     else:
+        all_passed_message = repo_handler.get_config_value("all_passed_message", '')
+        all_passed_message = all_passed_message.format(pr_handler=pr_handler, repo_handler=repo_handler)
+        if comment_id and all_passed_message:
+            pr_handler.submit_comment(all_passed_message, comment_id=comment_id)
+
         comment_url = None
         message = ''
 
