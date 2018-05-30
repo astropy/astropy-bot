@@ -1,6 +1,6 @@
 import json
 import requests
-from chagebot.github.github_auth import github_request_headers, get_installation_id_for_repo
+from changebot.github.github_auth import github_request_headers, get_installation_id_for_repo
 
 from flask import Blueprint, request, current_app
 
