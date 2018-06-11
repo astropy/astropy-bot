@@ -73,7 +73,9 @@ foo.frob.blurg
     assert len(issues) == 0
 
 
-@pytest.mark.parametrize('label', ['no-changelog-entry-needed', 'Affects-dev'])
+@pytest.mark.parametrize('label', ['no-changelog-entry-needed',
+                                   'Affects-dev',
+                                   'skip-changelog-checks'])
 def test_review_missing_with_tag(label):
     content = """
 1.1.0 (unreleased)

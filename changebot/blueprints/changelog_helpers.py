@@ -72,6 +72,11 @@ def review_changelog(pull_request, changelog, is_modified, milestone, labels):
 
     issues = []
 
+    # Changelog checks manually disabled for this pull request.
+    # This is originally for post-release insertion of new changelog sections.
+    if 'skip-changelog-checks' in labels:
+        return issues
+
     if not milestone:
         issues.append("The milestone has not been set (this can only be set by a maintainer)")
 
