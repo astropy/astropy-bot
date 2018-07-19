@@ -5,10 +5,11 @@ import pytest
 
 from changebot.webapp import app
 from changebot.github.github_api import RepoHandler, PullRequestHandler
-from changebot.blueprints.pull_request_checker import (
-    process_changelog_consistency, CHANGELOG_PROLOGUE, CHANGELOG_NOT_DONE,
-    CHANGELOG_BAD_LIST, CHANGELOG_BAD_EPILOGUE, CHANGELOG_GOOD,
-    CHANGELOG_EPILOGUE)
+from changebot.blueprints.pull_request_checker import process_pull_request
+from changebot.blueprints.changelog_checker import (CHANGELOG_NOT_DONE,
+                                                    CHANGELOG_BAD_LIST,
+                                                    CHANGELOG_BAD_EPILOGUE,
+                                                    CHANGELOG_GOOD)
 
 
 class TestHook:
@@ -25,7 +26,7 @@ class TestHook:
 
         headers = {'X-GitHub-Event': 'pull_request'}
 
-        with patch('changebot.blueprints.pull_request_checker.process_changelog_consistency') as p:
+        with patch('changebot.blueprints.pull_request_checker.process_pull_request') as p:
             self.client.post('/hook', data=json.dumps(data), headers=headers,
                              content_type='application/json')
             p.assert_called_with('test-repo', '1234', '123')
@@ -40,7 +41,7 @@ class TestHook:
 
         headers = {'X-GitHub-Event': 'pull_request'}
 
-        with patch('changebot.blueprints.pull_request_checker.process_changelog_consistency') as p:
+        with patch('changebot.blueprints.pull_request_checker.process_pull_request') as p:
             self.client.post('/hook', data=json.dumps(data), headers=headers,
                              content_type='application/json')
             assert p.call_count == 0
@@ -66,8 +67,10 @@ class TestProcessChangelog:
             PullRequestHandler, 'labels', new_callable=PropertyMock)
         self.patch_submit_comment = patch.object(
             PullRequestHandler, 'submit_comment', return_value='url')
+        self.patch_user = patch.object(
+            PullRequestHandler, 'user', return_value='user')
         self.patch_set_status = patch.object(PullRequestHandler, 'set_status')
-        self.patch_check_changelog = patch('changebot.blueprints.pull_request_checker.check_changelog_consistency')
+        self.patch_check_changelog = patch('changebot.blueprints.changelog_checker.check_changelog_consistency')
 
         self.changelog_cfg = self.patch_repo_config.start()
         self.patch_pr_json.start()
@@ -94,7 +97,7 @@ class TestProcessChangelog:
         self.changelog_cfg.return_value = False
 
         with app.app_context():
-            process_changelog_consistency('repo', '1234', 'installation')
+            process_pull_request('repo', '1234', 'installation')
 
         assert self.issues.call_count == 0
 
@@ -106,11 +109,12 @@ class TestProcessChangelog:
         self.labels.return_value = []
         self.issues.return_value = []
         self.comment_ids.return_value = ['123', '456']
-        expected = (CHANGELOG_PROLOGUE.format(user='user') + CHANGELOG_GOOD +
-                    CHANGELOG_EPILOGUE)
 
+        pr_handler = PullRequestHandler('test-repo', '1234', '123')
+        expected = (app.pull_request_prolog.format(pr_handler=pr_handler) + CHANGELOG_GOOD +
+                    app.pull_request_epilog)
         with app.app_context():
-            process_changelog_consistency('repo', '1234', 'installation')
+            process_pull_request('repo', '1234', 'installation')
 
         assert self.issues.call_count == 1
         self.submit_comment.assert_called_with(
@@ -126,16 +130,17 @@ class TestProcessChangelog:
         self.labels.return_value = []
         self.issues.return_value = ['One issue']
         self.comment_ids.return_value = ['123']
-        expected = (CHANGELOG_PROLOGUE.format(user='user') +
+        pr_handler = PullRequestHandler('test-repo', '1234', '123')
+        expected = (app.pull_request_prolog.format(pr_handler=pr_handler) +
                     CHANGELOG_BAD_LIST +
                     '* {0}\n'.format('One issue') +
                     CHANGELOG_BAD_EPILOGUE)
         expected = (expected.replace('issues with', 'issue with')
                     .replace('fix these', 'fix this'))
-        expected += CHANGELOG_EPILOGUE
+        expected += app.pull_request_epilog
 
         with app.app_context():
-            process_changelog_consistency('repo', '1234', 'installation')
+            process_pull_request('repo', '1234', 'installation')
 
         assert self.issues.call_count == 1
         self.submit_comment.assert_called_with(
@@ -152,15 +157,16 @@ class TestProcessChangelog:
         self.labels.return_value = []
         self.issues.return_value = ['One issue', 'OMG another one']
         self.comment_ids.return_value = []
-        expected = (CHANGELOG_PROLOGUE.format(user='user') +
+        pr_handler = PullRequestHandler('test-repo', '1234', '123')
+        expected = (app.pull_request_prolog.format(pr_handler=pr_handler) +
                     CHANGELOG_BAD_LIST +
                     '* {0}\n'.format('One issue') +
                     '* {0}\n'.format('OMG another one') +
                     CHANGELOG_BAD_EPILOGUE +
-                    CHANGELOG_EPILOGUE)
+                    app.pull_request_epilog)
 
         with app.app_context():
-            process_changelog_consistency('repo', '1234', 'installation')
+            process_pull_request('repo', '1234', 'installation')
 
         assert self.issues.call_count == 1
         self.submit_comment.assert_called_with(
@@ -176,14 +182,15 @@ class TestProcessChangelog:
 
         self.changelog_cfg.return_value = True
         self.labels.return_value = ['Experimental']
-        expected = (CHANGELOG_PROLOGUE.format(user='user') +
+        pr_handler = PullRequestHandler('test-repo', '1234', '123')
+        expected = (app.pull_request_prolog.format(pr_handler=pr_handler) +
                     CHANGELOG_NOT_DONE.format(
                         status='an experimental',
                         is_done='discussion in settled') +
-                    CHANGELOG_EPILOGUE)
+                    app.pull_request_epilog)
 
         with app.app_context():
-            process_changelog_consistency('repo', '1234', 'installation')
+            process_pull_request('repo', '1234', 'installation')
 
         assert self.issues.call_count == 0
         self.submit_comment.assert_called_with(
@@ -199,14 +206,15 @@ class TestProcessChangelog:
 
         self.changelog_cfg.return_value = True
         self.labels.return_value = ['Work in progress']
-        expected = (CHANGELOG_PROLOGUE.format(user='user') +
+        pr_handler = PullRequestHandler('test-repo', '1234', '123')
+        expected = (app.pull_request_prolog.format(pr_handler=pr_handler) +
                     CHANGELOG_NOT_DONE.format(
                         status='a work in progress',
                         is_done='is ready for review') +
-                    CHANGELOG_EPILOGUE)
+                    app.pull_request_epilog)
 
         with app.app_context():
-            process_changelog_consistency('repo', '1234', 'installation')
+            process_pull_request('repo', '1234', 'installation')
 
         assert self.issues.call_count == 0
         self.submit_comment.assert_called_with(
