@@ -1,8 +1,3 @@
-flask
-flask-dance
-pygithub
-requests
-cryptography
+git+https://github.com/astrofrog/baldrick
 python-dateutil
 humanize
-toml
