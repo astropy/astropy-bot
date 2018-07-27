@@ -39,7 +39,7 @@ class TestPullRequestChecker:
         self.pr_handler.labels = ['skip-changelog-checks']
 
         with app.app_context():
-            statuses = check_changelog_consistency(self.repo_handler, self.pr_handler)
+            statuses = check_changelog_consistency(self.pr_handler, self.repo_handler)
 
         assert len(statuses) == 0
 
@@ -50,7 +50,7 @@ class TestPullRequestChecker:
         self.config['changelog_checker'] = {'filename': 'CHANGES.rst'}
 
         with app.app_context():
-            statuses = check_changelog_consistency(self.repo_handler, self.pr_handler)
+            statuses = check_changelog_consistency(self.pr_handler, self.repo_handler)
 
         assert statuses == {'changelog_milestone': {'description': 'Changelog CHANGES.rst not found',
                                                     'state': 'failure'}}
@@ -71,7 +71,7 @@ class TestPullRequestChecker:
         self.config['changelog_checker'] = {'filename': 'CHANGES.rst'}
 
         with app.app_context():
-            statuses = check_changelog_consistency(self.repo_handler, self.pr_handler)
+            statuses = check_changelog_consistency(self.pr_handler, self.repo_handler)
 
         assert statuses == {'changelog_milestone': {'description': 'Changelog entry present in multiple version sections (1.0, 2.0)',
                                                     'state': 'failure'}}
@@ -90,7 +90,7 @@ class TestPullRequestChecker:
         self.pr_handler.labels = ['no-changelog-entry-needed']
 
         with app.app_context():
-            statuses = check_changelog_consistency(self.repo_handler, self.pr_handler)
+            statuses = check_changelog_consistency(self.pr_handler, self.repo_handler)
 
         assert statuses == {'changelog_milestone': {'description': 'Changelog entry present but **no-changelog-entry-needed** label set',
                                                     'state': 'failure'}}
@@ -109,7 +109,7 @@ class TestPullRequestChecker:
         self.pr_handler.labels = ['Affects-dev']
 
         with app.app_context():
-            statuses = check_changelog_consistency(self.repo_handler, self.pr_handler)
+            statuses = check_changelog_consistency(self.pr_handler, self.repo_handler)
 
         assert statuses == {'changelog_milestone': {'description': 'Changelog entry present but **Affects-dev** label set',
                                                     'state': 'failure'}}
@@ -128,7 +128,7 @@ class TestPullRequestChecker:
         self.pr_handler.milestone = '2.0'
 
         with app.app_context():
-            statuses = check_changelog_consistency(self.repo_handler, self.pr_handler)
+            statuses = check_changelog_consistency(self.pr_handler, self.repo_handler)
 
         assert statuses == {'changelog_milestone': {'description': 'Changelog entry section (1.0) inconsistent with milestone (2.0)',
                                                     'state': 'failure'}}
@@ -147,7 +147,7 @@ class TestPullRequestChecker:
         self.pr_handler.milestone = '1.0'
 
         with app.app_context():
-            statuses = check_changelog_consistency(self.repo_handler, self.pr_handler)
+            statuses = check_changelog_consistency(self.pr_handler, self.repo_handler)
 
         assert statuses == {'changelog_milestone': {'description': 'Changelog entry consistent with milestone',
                                                     'state': 'success'}}
@@ -165,7 +165,7 @@ class TestPullRequestChecker:
         self.pr_handler.labels = ['no-changelog-entry-needed']
 
         with app.app_context():
-            statuses = check_changelog_consistency(self.repo_handler, self.pr_handler)
+            statuses = check_changelog_consistency(self.pr_handler, self.repo_handler)
 
         assert statuses == {'changelog_milestone': {'description': 'Changelog entry not present, as expected since the **no-changelog-entry-needed** label is present',
                                                     'state': 'success'}}
@@ -183,7 +183,7 @@ class TestPullRequestChecker:
         self.pr_handler.labels = ['Affects-dev']
 
         with app.app_context():
-            statuses = check_changelog_consistency(self.repo_handler, self.pr_handler)
+            statuses = check_changelog_consistency(self.pr_handler, self.repo_handler)
 
         assert statuses == {'changelog_milestone': {'description': 'Changelog entry not present, as expected since the **Affects-dev** label is present',
                                                     'state': 'success'}}
@@ -200,7 +200,7 @@ class TestPullRequestChecker:
         self.config['changelog_checker'] = {'filename': 'CHANGES.rst'}
 
         with app.app_context():
-            statuses = check_changelog_consistency(self.repo_handler, self.pr_handler)
+            statuses = check_changelog_consistency(self.pr_handler, self.repo_handler)
 
         assert statuses == {'changelog_milestone': {'description': 'Changelog entry not present, (or pull request number missing) and neither the **Affects-dev** nor the **no-changelog-entry-needed** label are set',
                                                     'state': 'failure'}}

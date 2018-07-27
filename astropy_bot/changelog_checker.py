@@ -5,7 +5,7 @@ from baldrick.plugins.github_pull_requests import pull_request_handler
 
 
 @pull_request_handler
-def check_changelog_consistency(repo_handler, pr_handler):
+def check_changelog_consistency(pr_handler, repo_handler):
 
     labels = pr_handler.labels
 
