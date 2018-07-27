@@ -8,6 +8,11 @@ os:
 python:
   - "3.6"
 
+env:
+  global:
+    - GITHUB_APP_INTEGRATION_ID=1234
+    - GITHUB_APP_PRIVATE_KEY=abcd
+
 install:
   - pip install -r requirements.txt
   - pip install -r requirements_test.txt
