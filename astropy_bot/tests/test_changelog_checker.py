@@ -52,7 +52,7 @@ class TestPullRequestChecker:
         with app.app_context():
             statuses = check_changelog_consistency(self.pr_handler, self.repo_handler)
 
-        assert statuses == {'changelog_milestone': {'description': 'Changelog CHANGES.rst not found',
+        assert statuses == {'changelog_milestone': {'description': 'This repository does not appear to have a change log! (expecting a file named CHANGES.rst)',
                                                     'state': 'failure'}}
 
     def test_too_many_versions(self, app):

@@ -23,7 +23,7 @@ def check_changelog_consistency(pr_handler, repo_handler):
     try:
         changelog = repo_handler.get_file_contents(filename)
     except FileNotFoundError:
-        statuses['changelog_milestone'] = {'description': f'Changelog {filename} not found',
+        statuses['changelog_milestone'] = {'description': f'This repository does not appear to have a change log! (expecting a file named {filename})',
                                            'state': 'failure'}
         return statuses
 
