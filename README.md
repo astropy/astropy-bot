@@ -6,21 +6,21 @@
 This is a GitHub bot written using Flask for the Astropy project which can be
 installed via GitHub integrations. We use the concept of flask "blueprints" to
 separate the different functionality. Each blueprint is defined in a separate
-file inside [changebot/blueprints](changebot/blueprints). The bot includes the
+file inside [astropy_bot/blueprints](astropy_bot/blueprints). The bot includes the
 following functionality:
 
 * Check pull requests whenever they are changed. For now the checks only
   include making sure the changelog is consistent with the milestone and the
   labels but this could be expanded in future. This is defined in
-  [pull_request_checker.py](changebot/blueprints/pull_request_checker.py).
+  [pull_request_checker.py](astropy_bot/blueprints/pull_request_checker.py).
 
 * Check for issues labeled as "Close?" that have become stale, and close them
   (with a warning period). This is defined in
-  [stale_issues.py](changebot/blueprints/stale_issues.py).
+  [stale_issues.py](astropy_bot/blueprints/stale_issues.py).
 
 * Check for pull requests that have become stale, and close
   them (with a warning period). This is defined in
-  [stale_pull_requests.py](changebot/blueprints/stale_pull_requests.py).
+  [stale_pull_requests.py](astropy_bot/blueprints/stale_pull_requests.py).
 
 More details about the bot and its components is provided in the sections below.
 
@@ -28,7 +28,7 @@ More details about the bot and its components is provided in the sections below.
 
 #### Optional: Heroku settings (creating a separate instance of this bot)
 
-For ``astropy-bot``, the ``astrochangebot.herokuapp.com`` server is a GitHub
+For ``astropy-bot``, the ``astroastropy_bot.herokuapp.com`` server is a GitHub
 app that is set up on [Heroku](https://heroku.com).
 We use the auto-deploy functionality in Heroku to re-deploy the app anytime
 a change is made to this repository.
@@ -115,11 +115,11 @@ the bot code resides (either here or your fork, as appropriate).
 
 For the **User authorization callback URL**, it should be in the format of
 ``http://<heroku-bot-name>.herokuapp.com/callback``. For ``astropy-bot``,
-this is http://astrochangebot.herokuapp.com/callback.
+this is http://astroastropy_bot.herokuapp.com/callback.
 
 For the **Webhook URL**, it should be in the format of
 ``http://<heroku-bot-name>.herokuapp.com/hook``. For ``astropy-bot``,
-this is http://astrochangebot.herokuapp.com/hook
+this is http://astroastropy_bot.herokuapp.com/hook
 
 You can ignore "Setup URL" and "Webhook secret". It would be useful to
 provide a description of what your bot intends to do but not required.
@@ -178,8 +178,8 @@ is a change in a pull request.  Currently the main code that gets run when this
 happens is the ``check_changelog_consistency`` function, which makes sure that
 the changelog is consistent with the pull request number, labels, and milestone.
 The main logic is defined in
-[pull_request_checker.py](changebot/blueprints/pull_request_checker.py) and
-[changelog_helpers.py](changebot/blueprints/changelog_helpers.py)
+[pull_request_checker.py](astropy_bot/blueprints/pull_request_checker.py) and
+[changelog_helpers.py](astropy_bot/blueprints/changelog_helpers.py)
 
 If ``CHANGES.rst``, ``CHANGES``, or ``CHANGES.md`` file does not exist in the
 repository, bot will not comment at all.
@@ -247,8 +247,8 @@ For pull requests, adding a new commit resets the clock, while adding the
 **keep-open** label means that this pull request will not be touched by the bot.
 
 To run these checks, you can access
-http://astrochangebot.herokuapp.com/close_stale_issues and
-http://astrochangebot.herokuapp.com/close_stale_pull_requests
+http://astroastropy_bot.herokuapp.com/close_stale_issues and
+http://astroastropy_bot.herokuapp.com/close_stale_pull_requests
 using a POST request and with the following parameters encoded in JSON:
 
 * ``'repository'``: the name of the repository to run the checks for,
@@ -275,14 +275,14 @@ requests.post(URL, json=data)
 
 The different components of the bot interact with GitHub via a set of helper
 classes that live in
-[changebot/github/github_api.py](changebot/github/github_api.py).
+[astropy_bot/github/github_api.py](astropy_bot/github/github_api.py).
 These classes are ``RepoHandler``, ``IssueHandler``, and
 ``PullRequestHandler``. It is possible to try these out locally, at least for
 the parts of the GitHub API that do not require authentication.
 For example, the following should work:
 
 ```python
->>> from changebot.github.github_api import RepoHandler, IssueHandler, PullRequestHandler
+>>> from astropy_bot.github.github_api import RepoHandler, IssueHandler, PullRequestHandler
 >>> repo = RepoHandler('astropy/astropy')
 >>> repo.get_issues('open', 'Close?')
 [6025, 5193, 4842, 4549, 4058, 3951, 3845, 2603, 2232, 1920, 1024, 435, 383, 282]
@@ -301,9 +301,9 @@ the GitHub public API limits. If you are interested in authenticating locally,
 see the **Authentication** section below.
 
 Code-wise, the authentication of the app is handled in the
-[changebot/github/github_auth.py](changebot/github/github_auth.py) file -
+[astropy_bot/github/github_auth.py](astropy_bot/github/github_auth.py) file -
 the main function from there that is used in
-[changebot/github/github_api.py](changebot/github/github_api.py) is the
+[astropy_bot/github/github_api.py](astropy_bot/github/github_api.py) is the
  ``github_request_headers`` function which returns headers for requests
 that contain the appropriate tokens.
 
@@ -332,7 +332,7 @@ In this case, 36238 is the installation ID. Provided you set the environment
 variables correctly, you should then be able to do e.g.:
 
 ```python
->>> from changebot.github.github_api import IssueHandler
+>>> from astropy_bot.github.github_api import IssueHandler
 >>> issue = IssueHandler('astrofrog/test-bot', 5, installation=36238)
 >>> issue.submit_comment('I am alive!')
 ```

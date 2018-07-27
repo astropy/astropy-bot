@@ -4,7 +4,7 @@
 
 from unittest.mock import MagicMock, PropertyMock
 
-from changebot.pull_request_checker import check_changelog_consistency
+from astropy_bot.changelog_checker import check_changelog_consistency
 
 
 class TestPullRequestChecker:
