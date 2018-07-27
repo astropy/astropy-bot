@@ -1,4 +1,6 @@
 import os
+import re
+import sys
 
 from baldrick import create_app
 
@@ -46,8 +48,10 @@ app.pull_requests_default['fail_epilogue'] = os.linesep * 2 + re.sub('(\w+)\n', 
  [here](https://github.com/astropy/astropy-bot/issues).*
 """).strip()
 
-app.pull_request_default['pull_request_substring'] = "issues related to the changelog"
+app.pull_requests_default['pull_request_substring'] = "issues related to the changelog"
 
 # Bind to PORT if defined, otherwise default to 5000.
 port = int(os.environ.get('PORT', 5000))
-app.run(host='0.0.0.0', port=port, debug=False)
+
+if '--skip-run' not in sys.argv:
+    app.run(host='0.0.0.0', port=port, debug=False)
