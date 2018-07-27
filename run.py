@@ -18,7 +18,7 @@ app.pull_requests_default = {}
 
 app.pull_requests_default['skip_labels'] = ['Experimental', 'Work in progress']
 
-app.pull_requests_default['skip_message_default'] = re.sub('(\w+)\n', r'\1', """
+app.pull_requests_default['skip_message'] = re.sub('(\w+)\n', r'\1', """
 Hi there @{pr_handler.user} :wave: - thanks for the pull request! I'm just a friendly
 :robot: that checks for issues related to the changelog and making sure that
 this pull request is milestoned and labeled correctly. I see this pull request
