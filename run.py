@@ -19,7 +19,7 @@ app.pull_requests_default = {}
 app.pull_requests_default['skip_labels'] = ['Experimental', 'Work in progress']
 
 app.pull_requests_default['skip_message_default'] = re.sub('(\w+)\n', r'\1', """
-Hi there @{user} :wave: - thanks for the pull request! I'm just a friendly
+Hi there @{pr_handler.user} :wave: - thanks for the pull request! I'm just a friendly
 :robot: that checks for issues related to the changelog and making sure that
 this pull request is milestoned and labeled correctly. I see this pull request
 is labelled as being experimental/a work in progress. I'll report back once this
@@ -27,14 +27,14 @@ PR is no longer labelled as such.
 """).strip()
 
 app.pull_requests_default['all_passed_message'] = re.sub('(\w+)\n', r'\1',"""
-Hi there @{user} :wave: - thanks for the pull request! I'm just a friendly
+Hi there @{pr_handler.user} :wave: - thanks for the pull request! I'm just a friendly
 :robot: that checks for issues related to the changelog and making sure that
 this pull request is milestoned and labeled correctly. Everything looks good
 from my point of view! :+1:.
 """).strip()
 
 app.pull_requests_default['fail_prologue'] = re.sub('(\w+)\n', r'\1',"""
-Hi there @{user} :wave: - thanks for the pull request! I'm just a friendly
+Hi there @{pr_handler.user} :wave: - thanks for the pull request! I'm just a friendly
 :robot: that checks for issues related to the changelog and making sure that
 this pull request is milestoned and labeled correctly. This is mainly intended
 for the maintainers, so if you are not a maintainer you can ignore this, and a
