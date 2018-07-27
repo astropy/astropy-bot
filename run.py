@@ -50,6 +50,8 @@ app.pull_requests_default['fail_epilogue'] = os.linesep * 2 + re.sub('(\w+)\n', 
 
 app.pull_requests_default['pull_request_substring'] = "issues related to the changelog"
 
+app.pull_requests_default['post_pr_comment'] = True
+
 # Bind to PORT if defined, otherwise default to 5000.
 port = int(os.environ.get('PORT', 5000))
 
