@@ -24,7 +24,7 @@ def check_changelog_consistency(pr_handler, repo_handler):
         changelog = repo_handler.get_file_contents(filename)
     except FileNotFoundError:
         statuses['changelog'] = {'description': f'This repository does not appear to have a change log! (expecting a file named {filename})',
-                                           'state': 'failure'}
+                                 'state': 'failure'}
         return statuses
 
     # Parse changelog
@@ -36,42 +36,42 @@ def check_changelog_consistency(pr_handler, repo_handler):
     if len(versions) > 1:
 
         statuses['changelog'] = {'description': f'Changelog entry present in multiple version sections ({", ".join(versions)})',
-                                           'state': 'failure'}
+                                 'state': 'failure'}
 
     elif len(versions) == 1:
 
         if 'no-changelog-entry-needed' in pr_handler.labels:
             statuses['changelog'] = {'description': 'Changelog entry present but **no-changelog-entry-needed** label set',
-                                               'state': 'failure'}
+                                     'state': 'failure'}
         elif 'Affects-dev' in pr_handler.labels:
             statuses['changelog'] = {'description': 'Changelog entry present but **Affects-dev** label set',
-                                               'state': 'failure'}
+                                     'state': 'failure'}
         elif pr_handler.milestone and not pr_handler.milestone.startswith(versions[0]):
             statuses['changelog'] = {'description': 'Changelog entry section ({0}) '
-                                                              'inconsistent with milestone ({1})'
-                                                              .format(versions[0], pr_handler.milestone),
-                                               'state': 'failure'}
+                                     'inconsistent with milestone ({1})'
+                                     .format(versions[0], pr_handler.milestone),
+                                     'state': 'failure'}
         else:
             statuses['changelog'] = {'description': 'Changelog entry consistent with milestone',
-                                               'state': 'success'}
+                                     'state': 'success'}
 
     else:
 
         if 'Affects-dev' in pr_handler.labels:
 
             statuses['changelog'] = {'description': 'Changelog entry not present, as expected since the **Affects-dev** label is present',
-                                               'state': 'success'}
+                                     'state': 'success'}
 
         elif 'no-changelog-entry-needed' in pr_handler.labels:
 
             statuses['changelog'] = {'description': 'Changelog entry not present, as expected since the **no-changelog-entry-needed** label is present',
-                                               'state': 'success'}
+                                     'state': 'success'}
 
         else:
 
             statuses['changelog'] = {'description': 'Changelog entry not present, (or pull request number '
-                                                              'missing) and neither the **Affects-dev** nor the '
-                                                              '**no-changelog-entry-needed** label are set',
-                                               'state': 'failure'}
+                                     'missing) and neither the **Affects-dev** nor the '
+                                     '**no-changelog-entry-needed** label are set',
+                                     'state': 'failure'}
 
     return statuses
