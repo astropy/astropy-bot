@@ -48,6 +48,8 @@ app.pull_requests_default['fail_epilogue'] = os.linesep * 2 + " ".join("""
  [here](https://github.com/astropy/astropy-bot/issues).*
 """.strip().splitlines())
 
+app.pull_requests_default['fail_status'] = 'Failed some checks, see comment by astropy-bot'
+
 app.pull_requests_default['pull_request_substring'] = "issues related to the changelog"
 
 app.pull_requests_default['post_pr_comment'] = True
