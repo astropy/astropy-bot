@@ -2,7 +2,7 @@
 # than the requests to the server, as we assume the repo and pull request
 # handlers are tested inside baldrick.
 
-from unittest.mock import MagicMock, PropertyMock
+from unittest.mock import MagicMock
 
 from astropy_bot.changelog_checker import check_changelog_consistency
 

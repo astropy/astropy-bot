@@ -1,1 +1,1 @@
-from baldrick.conftest import app
+from baldrick.conftest import app  # noqa
