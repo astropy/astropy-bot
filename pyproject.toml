@@ -1,0 +1,43 @@
+[tool.astropy-bot-experimental]
+
+[tool.astropy-bot-experimental.pull_requests]
+
+skip_labels = ["Experimental", "Work in progress"]
+
+skip_message = """
+Hi there @{pr_handler.user} :wave: - thanks for the pull request! I'm just a \
+friendly :robot: that checks for issues related to the changelog and making \
+sure that this pull request is milestoned and labeled correctly. I see this \
+pull request is labelled as being experimental/a work in progress. I'll report \
+back once this PR is no longer labelled as such."""
+
+all_passed_message = """
+Hi there @{pr_handler.user} :wave: - thanks for the pull request! I'm just a \
+friendly :robot: that checks for issues related to the changelog and making \
+sure that this pull request is milestoned and labeled correctly.
+
+Everything  looks good from my point of view! :+1:.
+"""
+
+fail_prologue = """
+Hi there @{pr_handler.user} :wave: - thanks for the pull request! I'm just a \
+friendly :robot: that checks for issues related to the changelog and making \
+sure that this pull request is milestoned and labeled correctly. This is \
+mainly intended for the maintainers, so if you are not a maintainer you can \
+ignore this, and a maintainer will let you know if any action is required on \
+your part :smiley:.
+
+I noticed the following issues with this pull request:
+
+"""
+
+fail_epilogue = """
+
+*If there are any issues with this message, please report them \
+ [here](https://github.com/astropy/astropy-bot/issues).*"""
+
+fail_status = "Failed some checks, see comment by astropy-bot"
+
+pull_request_substring = "issues related to the changelog"
+
+post_pr_comment = true

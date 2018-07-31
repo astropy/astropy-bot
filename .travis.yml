@@ -20,6 +20,7 @@ install:
 script:
   - pytest -rx --flake8 --cov astropy_bot astropy_bot
   - python run.py --skip-run
+  - python -c "from baldrick.config import load; load('pyproject.toml', tool='astropy-bot-experimental')"
 
 after_success:
   - codecov

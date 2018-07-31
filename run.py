@@ -1,5 +1,4 @@
 import os
-import re
 import sys
 
 from baldrick import create_app
@@ -12,47 +11,6 @@ import baldrick.plugins.github_milestones  # noqa
 
 # Load astropy-specific plugins
 import astropy_bot.changelog_checker  # noqa
-
-# Define skipping of pull request checks based on labels
-app.pull_requests_default = {}
-
-app.pull_requests_default['skip_labels'] = ['Experimental', 'Work in progress']
-
-app.pull_requests_default['skip_message'] = " ".join("""
-Hi there @{pr_handler.user} :wave: - thanks for the pull request! I'm just a friendly
-:robot: that checks for issues related to the changelog and making sure that
-this pull request is milestoned and labeled correctly. I see this pull request
-is labelled as being experimental/a work in progress. I'll report back once this
-PR is no longer labelled as such.
-""".strip().splitlines())
-
-app.pull_requests_default['all_passed_message'] = " ".join("""
-Hi there @{pr_handler.user} :wave: - thanks for the pull request! I'm just a friendly
-:robot: that checks for issues related to the changelog and making sure that
-this pull request is milestoned and labeled correctly. Everything looks good
-from my point of view! :+1:.
-""".strip().splitlines())
-
-app.pull_requests_default['fail_prologue'] = " ".join("""
-Hi there @{pr_handler.user} :wave: - thanks for the pull request! I'm just a friendly
-:robot: that checks for issues related to the changelog and making sure that
-this pull request is milestoned and labeled correctly. This is mainly intended
-for the maintainers, so if you are not a maintainer you can ignore this, and a
-maintainer will let you know if any action is required on your part :smiley:.
-""".strip().splitlines()) + os.linesep * 2 + """
-I noticed the following issues with this pull request:
-""".strip() + os.linesep * 2
-
-app.pull_requests_default['fail_epilogue'] = os.linesep * 2 + " ".join("""
-*If there are any issues with this message, please report them
- [here](https://github.com/astropy/astropy-bot/issues).*
-""".strip().splitlines())
-
-app.pull_requests_default['fail_status'] = 'Failed some checks, see comment by astropy-bot'
-
-app.pull_requests_default['pull_request_substring'] = "issues related to the changelog"
-
-app.pull_requests_default['post_pr_comment'] = True
 
 # Bind to PORT if defined, otherwise default to 5000.
 port = int(os.environ.get('PORT', 5000))
