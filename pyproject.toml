@@ -32,6 +32,7 @@ I noticed the following issues with this pull request:
 """
 
 fail_epilogue = """
+ 
 
 *If there are any issues with this message, please report them \
  [here](https://github.com/astropy/astropy-bot/issues).*"""
