@@ -1,6 +1,5 @@
 from astropy_changelog import loads
 
-from baldrick.plugins.utils import get_config_with_app_defaults
 from baldrick.plugins.github_pull_requests import pull_request_handler
 
 
@@ -14,7 +13,7 @@ def check_changelog_consistency(pr_handler, repo_handler):
     if 'skip-changelog-checks' in labels:
         return {}
 
-    cl_config = get_config_with_app_defaults(pr_handler, "changelog_checker", {})
+    cl_config = pr_handler.get_config_value("changelog_checker", {})
     filename = cl_config.get("filename", 'CHANGES.rst')
 
     statuses = {}
