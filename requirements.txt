@@ -1,2 +1,2 @@
-git+https://github.com/astrofrog/baldrick
+git+https://github.com/OpenAstronomy/baldrick
 git+https://github.com/astrofrog/astropy-changelog
