@@ -1,6 +1,10 @@
-import pytest
+"""Tests for changelog helpers."""
 
-from ..changelog_helpers import review_changelog
+import pytest
+from unittest.mock import MagicMock, PropertyMock
+
+from changebot.blueprints.changelog_helpers import (
+    review_changelog, check_changelog_consistency)
 
 
 def test_review_good_changelog():
@@ -106,3 +110,31 @@ def test_review_unnecessary_changelog():
                               ['no-changelog-entry-needed'])
     ans = "Changelog entry present but **no-changelog-entry-needed** label set"
     assert len(issues) == 1 and issues[0] == ans
+
+
+def test_repo_no_changelog_okay():
+    """
+    Repo has no change log and this is okay.
+    """
+    repo = MagicMock()
+    repo.get_file_contents.side_effect = FileNotFoundError
+
+    pr = MagicMock()
+    type(pr).labels = PropertyMock(
+        return_value=['Docs', 'skip-changelog-checks'])
+
+    assert check_changelog_consistency(repo, pr) == []
+
+
+def test_repo_no_changelog_oops():
+    """
+    Repo has no change log and this is not expected.
+    """
+    repo = MagicMock()
+    repo.get_file_contents.side_effect = FileNotFoundError
+
+    pr = MagicMock()
+    type(pr).labels = PropertyMock(return_value=['no-changelog-entry-needed'])
+
+    assert check_changelog_consistency(repo, pr) == [
+        "This repository does not appear to have a change log!"]

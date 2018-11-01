@@ -57,7 +57,7 @@ def check_changelog_consistency(repo_handler, pr_handler):
             changelog = repo_handler.get_file_contents(filename)
         except FileNotFoundError:
             continue
-        else:
+        else:  # pragma: no cover
             break
     else:
         if 'skip-changelog-checks' in pr_handler.labels:
@@ -65,10 +65,10 @@ def check_changelog_consistency(repo_handler, pr_handler):
         else:
             return ["This repository does not appear to have a change log!"]
 
-    is_modified = pr_handler.has_modified(acceptable_names)
+    is_modified = pr_handler.has_modified(acceptable_names)  # pragma: no cover
 
     return review_changelog(pr_handler.number, changelog, is_modified,
-                            pr_handler.milestone, pr_handler.labels)
+                            pr_handler.milestone, pr_handler.labels)  # pragma: no cover
 
 
 def review_changelog(pull_request, changelog, is_modified, milestone, labels):
