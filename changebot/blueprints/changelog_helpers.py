@@ -60,7 +60,10 @@ def check_changelog_consistency(repo_handler, pr_handler):
         else:
             break
     else:
-        return ["This repository does not appear to have a change log!"]
+        if 'skip-changelog-checks' in pr_handler.labels:
+            return []
+        else:
+            return ["This repository does not appear to have a change log!"]
 
     is_modified = pr_handler.has_modified(acceptable_names)
 
