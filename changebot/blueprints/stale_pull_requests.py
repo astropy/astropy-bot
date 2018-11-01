@@ -23,7 +23,7 @@ def close_stale_pull_requests():
                     mimetype='text/plain')
 
 
-PULL_REQUESTS_CLOSE_WARNING = re.sub('(\w+)\n', r'\1', """
+PULL_REQUESTS_CLOSE_WARNING = re.sub(r'(\w+)\n', r'\1', """
 Hi humans :wave: - this pull request hasn't had any new commits for
  approximately {pasttime}. **I plan to close this in {futuretime} if the pull
  request doesn't have any new commits by then.**
@@ -47,7 +47,7 @@ def is_close_warning(message):
     return 'Hi humans :wave: - this pull request hasn\'t had any new commits' in message
 
 
-PULL_REQUESTS_CLOSE_EPILOGUE = re.sub('(\w+)\n', r'\1', """
+PULL_REQUESTS_CLOSE_EPILOGUE = re.sub(r'(\w+)\n', r'\1', """
 :alarm_clock: Time's up! :alarm_clock:
 
 I'm going to close this pull request as per my previous message. If you

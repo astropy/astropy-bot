@@ -46,7 +46,7 @@ def hook():
     return process_changelog_consistency(payload['repository']['full_name'], number, installation)
 
 
-CHANGELOG_PROLOGUE = re.sub('(\w+)\n', r'\1', """
+CHANGELOG_PROLOGUE = re.sub(r'(\w+)\n', r'\1', """
 Hi there @{user} :wave: - thanks for the pull request! I'm just
  a friendly :robot: that checks for
  issues related to the changelog and making sure that this
@@ -56,24 +56,24 @@ Hi there @{user} :wave: - thanks for the pull request! I'm just
  you know if any action is required on your part :smiley:.
 """).strip() + os.linesep + os.linesep
 
-CHANGELOG_NOT_DONE = re.sub('(\w+)\n', r'\1', """
+CHANGELOG_NOT_DONE = re.sub(r'(\w+)\n', r'\1', """
 I see this is {status} pull request. I'll report back
  on the checks once the PR {is_done}.
 """).strip()
 
-CHANGELOG_BAD_LIST = re.sub('(\w+)\n', r'\1', """
+CHANGELOG_BAD_LIST = re.sub(r'(\w+)\n', r'\1', """
 I noticed the following issues with this pull request:
 """).strip() + os.linesep + os.linesep
 
-CHANGELOG_BAD_EPILOGUE = os.linesep + re.sub('(\w+)\n', r'\1', """
+CHANGELOG_BAD_EPILOGUE = os.linesep + re.sub(r'(\w+)\n', r'\1', """
 Would it be possible to fix these? Thanks!
 """).strip()
 
-CHANGELOG_GOOD = re.sub('(\w+)\n', r'\1', """
+CHANGELOG_GOOD = re.sub(r'(\w+)\n', r'\1', """
 Everything looks good from my point of view! :+1:
 """).strip()
 
-CHANGELOG_EPILOGUE = os.linesep + os.linesep + re.sub('(\w+)\n', r'\1', """
+CHANGELOG_EPILOGUE = os.linesep + os.linesep + re.sub(r'(\w+)\n', r'\1', """
 *If there are any issues with this message, please report them
  [here](https://github.com/astropy/astropy-bot/issues).*
 """).strip()
