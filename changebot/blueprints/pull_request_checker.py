@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import time
 
 from flask import Blueprint, request
 
@@ -99,6 +100,11 @@ def process_changelog_consistency(repository, number, installation):
     # No-op if user so desires
     if not repo_handler.get_config_value('changelog_check', True):
         return "Repo owner does not want to check change log"
+
+    # Wait a little, to make sure that if we posted comments previously they
+    # have had time to appear. We need this because GitHub sometimes fires
+    # pull request events in quick succession.
+    time.sleep(2.)
 
     # Find previous comments by this app
     comment_ids = pr_handler.find_comments(
