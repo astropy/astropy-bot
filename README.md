@@ -29,12 +29,10 @@ The **astropy-bot** app is set up on [Heroku](https://heroku.com) and is
 available at http://astrochangebot.herokuapp.com.
 
 For more details about how to
-set up a baldrick app on Heroku, see [Setting up an app on Heroku]
-(https://baldrick.readthedocs.io/en/latest/heroku.html), including the section
+set up a baldrick app on Heroku, see [Setting up an app on Heroku](https://baldrick.readthedocs.io/en/latest/heroku.html), including the section
 on setting up the scheduled jobs for the stale issue/pull request checkers. and
 for details about creating the GitHub app, see
-[Registering and installing a GitHub app]
-(https://baldrick.readthedocs.io/en/latest/github.html).
+[Registering and installing a GitHub app](https://baldrick.readthedocs.io/en/latest/github.html).
 
 For Astropy, the GitHub app for this bot is defined in the
 [Astropy organization settings](https://github.com/organizations/astropy/settings/apps/astropy-bot)
@@ -42,8 +40,7 @@ For Astropy, the GitHub app for this bot is defined in the
 
 #### Install the bot in a repository
 
-Go to ``https://github.com/apps/<github-app-name>``; For this bot, it is
-https://github.com/apps/astropy-bot . Then, click on the big green "Install"
+Go to https://github.com/apps/astropy-bot . Then, click on the big green "Install"
 button. You can choose to install the bot on all or select repositories
 under your account or organization. It is recommended to only install it for
 select repositories by start typing a repository name and let auto-completion
@@ -68,17 +65,16 @@ under the **Your installations** tab, by clicking on the gearbox next to
 The default bot configuration for astropy-bot is given in the
 [pyproject.toml](pyproject.toml) file in this repository. To override these
 settings and/or enable additional plugins, you can create a ``pyproject.toml``
-file in your repository with the following section::
+file in your repository with the following section:
 
     [tool.astropy-bot]
 
-See [Available plugins and configuration]([Registering and installing a GitHub app]
-(https://baldrick.readthedocs.io/en/latest/github.html) for details of the
+See [Available plugins and configuration](https://baldrick.readthedocs.io/en/latest/plugins.html) for details of the
 configuration for the default baldrick plugins, including how to enable/disable
 plugins.
 
 For the custom plugin which checks the changelog, the following options are
-available::
+available:
 
     [tool.astropy-bot.changelog_checker]
     enabled = true
