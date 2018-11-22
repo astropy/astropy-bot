@@ -1,10 +1,10 @@
-[tool.astropy-bot-experimental]
+[tool.astropy-bot]
 
-[ tool.astropy-bot-experimental.milestones ]
+[ tool.astropy-bot.milestones ]
 
 enabled = true
 
-[tool.astropy-bot-experimental.pull_requests]
+[tool.astropy-bot.pull_requests]
 
 enabled = true
 post_pr_comment = false

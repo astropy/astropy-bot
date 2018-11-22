@@ -4,7 +4,7 @@ import sys
 from baldrick import create_app
 
 # Configure the app
-app = create_app('astropy-bot-experimental')
+app = create_app('astropy-bot')
 
 # Load plugins from baldrick
 import baldrick.plugins.github_milestones  # noqa
