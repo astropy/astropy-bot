@@ -10,3 +10,7 @@ enabled = true
 post_pr_comment = false
 skip_labels = ["Experimental", "Work in progress"]
 skip_fails = true
+
+# We keep the following for now because it is used to identify
+# and remove/edit old comments the bot posted in the past.
+pull_request_substring = "issues related to the changelog"

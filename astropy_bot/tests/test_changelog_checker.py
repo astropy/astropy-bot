@@ -23,7 +23,7 @@ class TestPullRequestChecker:
         self.repo_handler = MagicMock()
         self.repo_handler.get_file_contents = self.get_file_contents
 
-    def get_file_contents(self, filename):
+    def get_file_contents(self, filename, branch=None):
         if filename in self.files:
             return self.files[filename]
         else:
@@ -202,5 +202,5 @@ class TestPullRequestChecker:
         with app.app_context():
             statuses = check_changelog_consistency(self.pr_handler, self.repo_handler)
 
-        assert statuses == {'changelog': {'description': 'Changelog entry not present, (or pull request number missing) and neither the **Affects-dev** nor the **no-changelog-entry-needed** label are set',
+        assert statuses == {'changelog': {'description': 'Changelog entry not present, (or PR number missing) and neither the **Affects-dev** nor the **no-changelog-entry-needed** label are set',
                                           'state': 'failure'}}

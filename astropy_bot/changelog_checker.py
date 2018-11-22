@@ -45,14 +45,18 @@ def check_changelog_consistency(pr_handler, repo_handler):
         elif 'Affects-dev' in pr_handler.labels:
             statuses['changelog'] = {'description': 'Changelog entry present but **Affects-dev** label set',
                                      'state': 'failure'}
-        elif pr_handler.milestone and not pr_handler.milestone.startswith(versions[0]):
-            statuses['changelog'] = {'description': 'Changelog entry section ({0}) '
-                                     'inconsistent with milestone ({1})'
-                                     .format(versions[0], pr_handler.milestone),
-                                     'state': 'failure'}
+        elif pr_handler.milestone:
+            if pr_handler.milestone.startswith(versions[0]):
+                statuses['changelog'] = {'description': 'Changelog entry consistent with milestone',
+                                         'state': 'success'}
+            else:
+                statuses['changelog'] = {'description': 'Changelog entry section ({0}) '
+                                         'inconsistent with milestone ({1})'
+                                         .format(versions[0], pr_handler.milestone),
+                                         'state': 'failure'}
         else:
-            statuses['changelog'] = {'description': 'Changelog entry consistent with milestone',
-                                     'state': 'success'}
+            statuses['changelog'] = {'description': 'Cannot check for consistency of milestone since milestone is not set',
+                                     'state': 'failure'}
 
     else:
 
@@ -68,7 +72,7 @@ def check_changelog_consistency(pr_handler, repo_handler):
 
         else:
 
-            statuses['changelog'] = {'description': 'Changelog entry not present, (or pull request number '
+            statuses['changelog'] = {'description': 'Changelog entry not present, (or PR number '
                                      'missing) and neither the **Affects-dev** nor the '
                                      '**no-changelog-entry-needed** label are set',
                                      'state': 'failure'}
