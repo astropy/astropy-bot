@@ -1,6 +1,12 @@
 [tool.astropy-bot-experimental]
 
+[ tool.astropy-bot-experimental.milestones ]
+
+enabled - true
+
 [tool.astropy-bot-experimental.pull_requests]
+
+enabled = true
 
 skip_labels = ["Experimental", "Work in progress"]
 
