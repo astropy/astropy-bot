@@ -1,3 +1,12 @@
-[ tool.astropy-bot]
-  changelog_check = false
-  autoclose_stale_pull_request = false
+[tool.astropy-bot]
+
+[ tool.astropy-bot.milestones ]
+
+enabled = true
+
+[tool.astropy-bot.pull_requests]
+
+enabled = true
+post_pr_comment = false
+skip_labels = ["Experimental", "Work in progress"]
+skip_fails = true
