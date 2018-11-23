@@ -39,20 +39,30 @@ def check_changelog_consistency(pr_handler, repo_handler):
 
     elif len(versions) == 1:
 
+        # Extract milestone and version
+        milestone = pr_handler.milestone
+        version = versions[0]
+
+        # Strip any 'v' prefix from these
+        if milestone is not None and milestone.startswith('v'):
+            milestone = milestone[1:]
+        if version.startswith('v'):
+            version = version[1:]
+
         if 'no-changelog-entry-needed' in pr_handler.labels:
             statuses['changelog'] = {'description': 'Changelog entry present but **no-changelog-entry-needed** label set',
                                      'state': 'failure'}
         elif 'Affects-dev' in pr_handler.labels:
             statuses['changelog'] = {'description': 'Changelog entry present but **Affects-dev** label set',
                                      'state': 'failure'}
-        elif pr_handler.milestone:
-            if pr_handler.milestone.startswith(versions[0]):
+        elif milestone:
+            if milestone.startswith(version):
                 statuses['changelog'] = {'description': 'Changelog entry consistent with milestone',
                                          'state': 'success'}
             else:
                 statuses['changelog'] = {'description': 'Changelog entry section ({0}) '
                                          'inconsistent with milestone ({1})'
-                                         .format(versions[0], pr_handler.milestone),
+                                         .format(version, milestone),
                                          'state': 'failure'}
         else:
             statuses['changelog'] = {'description': 'Cannot check for consistency of milestone since milestone is not set',

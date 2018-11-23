@@ -152,6 +152,23 @@ class TestPullRequestChecker:
         assert statuses == {'changelog': {'description': 'Changelog entry consistent with milestone',
                                           'state': 'success'}}
 
+    def test_one_version_valid_withv(self, app):
+
+        # As above, but where milestone includes a 'v' prefix
+        changelog = ('1.0 (2018-10-22)\n'
+                     '----------------\n'
+                     '* change1 [#1234]\n')
+
+        self.files['CHANGES.rst'] = changelog
+        self.config['changelog_checker'] = {'filename': 'CHANGES.rst'}
+        self.pr_handler.milestone = 'v1.0'
+
+        with app.app_context():
+            statuses = check_changelog_consistency(self.pr_handler, self.repo_handler)
+
+        assert statuses == {'changelog': {'description': 'Changelog entry consistent with milestone',
+                                          'state': 'success'}}
+
     def test_no_version_no_changelog_entry_needed(self, app):
 
         # Test case where there is a changelog entry but the
