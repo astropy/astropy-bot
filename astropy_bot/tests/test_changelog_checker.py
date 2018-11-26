@@ -22,6 +22,7 @@ class TestPullRequestChecker:
 
         self.repo_handler = MagicMock()
         self.repo_handler.get_file_contents = self.get_file_contents
+        self.repo_handler.get_config_value = self.get_config_value
 
     def get_file_contents(self, filename, branch=None):
         if filename in self.files:

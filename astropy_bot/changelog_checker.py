@@ -13,7 +13,7 @@ def check_changelog_consistency(pr_handler, repo_handler):
     if 'skip-changelog-checks' in labels:
         return {}
 
-    cl_config = pr_handler.get_config_value("changelog_checker", {})
+    cl_config = repo_handler.get_config_value("changelog_checker", {})
     filename = cl_config.get("filename", 'CHANGES.rst')
 
     statuses = {}
