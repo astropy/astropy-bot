@@ -28,7 +28,9 @@ def check_changelog_consistency(pr_handler, repo_handler):
         return statuses
     has_code_change = any([f.startswith(('astropy/', 'cextern/')) and
                            'tests/' not in f for f in modfiles])
-    if (not has_code_change) and (filename not in modfiles):
+    if ((not has_code_change) and (filename not in modfiles) and
+            ('no-changelog-entry-needed' not in pr_handler.labels) and
+            ('Affects-dev' not in pr_handler.labels)):
         statuses['changelog'] = {'description': 'Changelog not required for these changes',
                                  'state': 'success'}
         return statuses

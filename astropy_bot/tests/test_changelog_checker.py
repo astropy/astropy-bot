@@ -13,7 +13,7 @@ class TestPullRequestChecker:
 
         self.files = {}
         self.config = {}
-        self.modified_files = []
+        self.modified_files = ['astropy/subpackage/file.py']
 
         self.pr_handler = MagicMock()
         self.pr_handler.number = 1234
