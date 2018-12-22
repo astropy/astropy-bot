@@ -18,6 +18,21 @@ def check_changelog_consistency(pr_handler, repo_handler):
 
     statuses = {}
 
+    # Smart skip: Skip when only the changelog is modified; OR
+    # only requires changelog when changes made to non-test files
+    # in directories of interest.
+    modfiles = pr_handler.get_modified_files()
+    if modfiles == [filename]:
+        statuses['changelog'] = {'description': 'Only changelog itself modified',
+                                 'state': 'success'}
+        return statuses
+    has_code_change = any([f.startswith(('astropy/', 'cextern/')) and
+                           'tests/' not in f for f in modfiles])
+    if (not has_code_change) and (filename not in modfiles):
+        statuses['changelog'] = {'description': 'Changelog not required for these changes',
+                                 'state': 'success'}
+        return statuses
+
     # Try different filenames - in future we could make
     try:
         changelog = repo_handler.get_file_contents(filename)

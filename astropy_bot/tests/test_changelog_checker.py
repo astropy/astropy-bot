@@ -13,12 +13,14 @@ class TestPullRequestChecker:
 
         self.files = {}
         self.config = {}
+        self.modified_files = []
 
         self.pr_handler = MagicMock()
         self.pr_handler.number = 1234
         self.pr_handler.labels = []
         self.pr_handler.milestone = None
         self.pr_handler.get_config_value = self.get_config_value
+        self.pr_handler.get_modified_files = self.get_modified_files
 
         self.repo_handler = MagicMock()
         self.repo_handler.get_file_contents = self.get_file_contents
@@ -33,6 +35,9 @@ class TestPullRequestChecker:
     def get_config_value(self, name, default):
         return self.config.get(name, default)
 
+    def get_modified_files(self):
+        return self.modified_files
+
     def test_skip_changelog_checks(self, app):
 
         # If the skip-changelog-checks label is set, we don't do any checks
@@ -43,6 +48,34 @@ class TestPullRequestChecker:
             statuses = check_changelog_consistency(self.pr_handler, self.repo_handler)
 
         assert len(statuses) == 0
+
+    def test_smart_skip_1(self, app):
+
+        # Test case where changelog check is automatically skipped
+        # only changelog itself is modified.
+
+        self.config['changelog_checker'] = {'filename': 'CHANGES.rst'}
+        self.modified_files = ['CHANGES.rst']
+
+        with app.app_context():
+            statuses = check_changelog_consistency(self.pr_handler, self.repo_handler)
+
+        assert statuses == {'changelog': {'description': 'Only changelog itself modified',
+                                          'state': 'success'}}
+
+    def test_smart_skip_2(self, app):
+
+        # Test case where changelog check is automatically skipped
+        # when files of interest are not modified
+
+        self.config['changelog_checker'] = {'filename': 'CHANGES.rst'}
+        self.modified_files = ['.travis.yml', 'astropy/subpackage/tests/file.py']
+
+        with app.app_context():
+            statuses = check_changelog_consistency(self.pr_handler, self.repo_handler)
+
+        assert statuses == {'changelog': {'description': 'Changelog not required for these changes',
+                                          'state': 'success'}}
 
     def test_missing_file(self, app):
 
