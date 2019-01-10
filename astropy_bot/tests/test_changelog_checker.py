@@ -74,7 +74,7 @@ class TestPullRequestChecker:
         with app.app_context():
             statuses = check_changelog_consistency(self.pr_handler, self.repo_handler)
 
-        assert statuses == {'changelog': {'description': 'Changelog not required for these changes',
+        assert statuses == {'changelog': {'description': 'Changelog not required for tests or docs only changes',
                                           'state': 'success'}}
 
     def test_missing_file(self, app):

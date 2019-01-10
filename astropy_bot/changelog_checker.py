@@ -19,19 +19,22 @@ def check_changelog_consistency(pr_handler, repo_handler):
     statuses = {}
 
     # Smart skip: Skip when only the changelog is modified; OR
-    # only requires changelog when changes made to non-test files
-    # in directories of interest.
+    # only requires changelog when changes made to non-test or
+    # non-docs files.
     modfiles = pr_handler.get_modified_files()
     if modfiles == [filename]:
         statuses['changelog'] = {'description': 'Only changelog itself modified',
                                  'state': 'success'}
         return statuses
-    has_code_change = any([f.startswith(('astropy/', 'cextern/')) and
-                           'tests/' not in f for f in modfiles])
-    if ((not has_code_change) and (filename not in modfiles) and
+    things_to_skip = ('.gitignore', '.travis.yml', 'ah_bootstrap.py',
+                      'appveyor.yml', 'conftest.py',
+                      'astropy_helpers/', 'doc/', 'docs/')
+    no_code_change = all([f.startswith(things_to_skip) or 'tests/' in f
+                          for f in modfiles])
+    if (no_code_change and (filename not in modfiles) and
             ('no-changelog-entry-needed' not in pr_handler.labels) and
             ('Affects-dev' not in pr_handler.labels)):
-        statuses['changelog'] = {'description': 'Changelog not required for these changes',
+        statuses['changelog'] = {'description': 'Changelog not required for tests or docs only changes',
                                  'state': 'success'}
         return statuses
 
