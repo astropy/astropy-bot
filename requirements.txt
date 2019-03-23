@@ -1,2 +1,2 @@
-baldrick
+git+https://github.com/OpenAstronomy/baldrick.git
 astropy-changelog
