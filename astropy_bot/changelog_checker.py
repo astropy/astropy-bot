@@ -56,7 +56,7 @@ def check_changelog_consistency(pr_handler, repo_handler):
             statuses['changelog'] = {'description': 'Changelog entry present but **Affects-dev** label set',
                                      'state': 'failure'}
         elif milestone:
-            if milestone.startswith(version):
+            if milestone == version:
                 statuses['changelog'] = {'description': 'Changelog entry consistent with milestone',
                                          'state': 'success'}
             else:
