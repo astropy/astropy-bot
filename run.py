@@ -11,6 +11,7 @@ import baldrick.plugins.github_milestones  # noqa
 
 # Load astropy-specific plugins
 import astropy_bot.changelog_checker  # noqa
+import astropy_bot.copyedit_checker  # noqa
 
 # Bind to PORT if defined, otherwise default to 5000.
 port = int(os.environ.get('PORT', 5000))
