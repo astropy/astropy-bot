@@ -1,6 +1,8 @@
 from baldrick.plugins.github_pull_requests import pull_request_handler
 
 
+# TODO: we need to note somewhere that if the copyeditor changes, this needs to
+# be updated!
 COPYEDITOR_GH_HANDLE = 'lglattly'
 
 
