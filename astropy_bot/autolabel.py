@@ -13,7 +13,7 @@ def get_subpackage_labels(files, all_labels):
 
             if subpkg:
                 for i in range(len(subpkg)):
-                    dot_name = '.'.join(subpkg[:i+1])
+                    dot_name = '.'.join(subpkg[:i + 1])
                     if dot_name in all_labels:
                         labels.add(dot_name)
 
