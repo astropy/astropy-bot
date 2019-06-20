@@ -60,4 +60,3 @@ class TestAutolabel:
         assert 'io.fits' in self.pr_handler.labels
         assert 'coordinates' in self.pr_handler.labels
         assert 'visualization.wcsaxes' in self.pr_handler.labels
-        
