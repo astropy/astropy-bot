@@ -3,6 +3,7 @@ from os import path, sep
 from baldrick.plugins.github_pull_requests import pull_request_handler
 
 LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel('INFO')
 
 
 def get_subpackage_labels(files, all_labels):
