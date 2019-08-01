@@ -68,7 +68,7 @@ def autolabel(pr_handler, repo_handler):
     pr_labels = set(pr_handler.labels)
     new_labels = set()
 
-    if al_config.get('subpackages', False):
+    if al_config.get('subpackages', True):
         labels = get_subpackage_labels(files, all_labels)
         new_labels = new_labels.union(labels)
 
