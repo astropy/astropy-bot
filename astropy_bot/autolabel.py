@@ -2,9 +2,6 @@ import logging
 from os import path, sep
 from baldrick.plugins.github_pull_requests import pull_request_handler
 
-LOGGER = logging.getLogger(__name__)
-LOGGER.setLevel('INFO')
-
 
 def get_subpackage_labels(files, all_labels):
     """Loop through all modified file paths and extract the path elements for
@@ -66,22 +63,22 @@ def get_subpackage_labels(files, all_labels):
 @pull_request_handler(actions=['opened'])
 def autolabel(pr_handler, repo_handler):
 
-    LOGGER.info(f'Running auto-labeller for {pr_handler.repo}#{pr_handler.number}')
+    print(f'Running auto-labeller for {pr_handler.repo}#{pr_handler.number}')
 
     al_config = repo_handler.get_config_value("autolabel", {})
     files = pr_handler.get_modified_files()
 
-    LOGGER.info('  Modified files:')
+    print('  Modified files:')
     for file in files:
-        LOGGER.info(f'    - {file}')
+        print(f'    - {file}')
 
     all_labels = repo_handler.get_all_labels()
 
-    LOGGER.info('  All labels: ' + ', '.join(all_labels))
+    print('  All labels: ' + ', '.join(all_labels))
 
     pr_labels = set(pr_handler.labels)
 
-    LOGGER.info('  Pull request labels: ' + ', '.join(pr_labels))
+    print('  Pull request labels: ' + ', '.join(pr_labels))
 
     new_labels = set()
 
@@ -93,7 +90,7 @@ def autolabel(pr_handler, repo_handler):
 
     if new_labels:
         final_labels = list(pr_labels.union(new_labels))
-        LOGGER.info('  Final labels to set: ' + ', '.join(final_labels))
+        print('  Final labels to set: ' + ', '.join(final_labels))
         pr_handler.set_labels(final_labels)
 
     return None
