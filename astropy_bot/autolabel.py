@@ -51,7 +51,7 @@ def get_subpackage_labels(files, all_labels):
                     # contain dots
                     dot_name = '.'.join(subpkg[:i + 1])
 
-                    # Only add the label if it exists in the full likst of
+                    # Only add the label if it exists in the full list of
                     # repository labels
                     if dot_name in all_labels:
                         labels.add(dot_name)
