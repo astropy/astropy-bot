@@ -59,7 +59,7 @@ def get_subpackage_labels(files, all_labels):
     return labels
 
 
-@pull_request_handler
+@pull_request_handler(actions=['opened'])
 def autolabel(pr_handler, repo_handler):
 
     al_config = repo_handler.get_config_value("autolabel", {})
