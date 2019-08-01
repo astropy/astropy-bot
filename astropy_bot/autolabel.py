@@ -1,5 +1,6 @@
-import logging
 from os import path, sep
+
+from baldrick.github.github_api import RepoHandler
 from baldrick.plugins.github_pull_requests import pull_request_handler
 
 
@@ -65,14 +66,19 @@ def autolabel(pr_handler, repo_handler):
 
     print(f'Running auto-labeller for {pr_handler.repo}#{pr_handler.number}')
 
-    al_config = repo_handler.get_config_value("autolabel", {})
+    # Note: repo_handler is the fork, we need to use the upstream repository
+    # for some tasks below.
+    upstream_repo = RepoHandler(pr_handler.repo,
+                                installation=pr_handler.installation)
+
+    al_config = upstream_repo.get_config_value("autolabel", {})
     files = pr_handler.get_modified_files()
 
     print('  Modified files:')
     for file in files:
         print(f'    - {file}')
 
-    all_labels = repo_handler.get_all_labels()
+    all_labels = upstream_repo.get_all_labels()
 
     print('  All labels: ' + ', '.join(all_labels))
 

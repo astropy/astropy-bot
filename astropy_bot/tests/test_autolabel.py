@@ -2,9 +2,10 @@
 # than the requests to the server, as we assume the repo and pull request
 # handlers are tested inside baldrick.
 
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from astropy_bot.autolabel import autolabel
+from baldrick.github.github_api import RepoHandler
 
 
 class AutolabelBase:
@@ -50,7 +51,9 @@ class TestAutolabel1(AutolabelBase):
 
     def test_autolabel_subpackages(self, app):
         with app.app_context():
-            autolabel(self.pr_handler, self.repo_handler)
+            with patch.object(RepoHandler, 'get_all_labels') as p:
+                p.side_effect = self.get_all_labels
+                autolabel(self.pr_handler, self.repo_handler)
 
         # make sure 'Docs' stays in there:
         assert 'Docs' in self.pr_handler.labels
@@ -67,7 +70,9 @@ class TestAutolabel2(AutolabelBase):
 
     def test_autolabel_subpackages(self, app):
         with app.app_context():
-            autolabel(self.pr_handler, self.repo_handler)
+            with patch.object(RepoHandler, 'get_all_labels') as p:
+                p.side_effect = self.get_all_labels
+                autolabel(self.pr_handler, self.repo_handler)
 
         # make sure 'Docs' stays in there:
         assert 'Docs' in self.pr_handler.labels
