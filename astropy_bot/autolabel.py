@@ -75,6 +75,6 @@ def autolabel(pr_handler, repo_handler):
     # TODO: add other auto-labeling logic here
 
     if new_labels:
-        pr_handler.set_labels(pr_labels.union(new_labels))
+        pr_handler.set_labels(list(pr_labels.union(new_labels)))
 
     return None
