@@ -4,6 +4,8 @@
 
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from astropy_bot.autolabel import autolabel
 from baldrick.github.github_api import RepoHandler
 
@@ -53,7 +55,9 @@ class TestAutolabel1(AutolabelBase):
         with app.app_context():
             with patch.object(RepoHandler, 'get_all_labels') as p:
                 p.side_effect = self.get_all_labels
-                autolabel(self.pr_handler, self.repo_handler)
+                with pytest.warns(UserWarning,
+                                  match='JSON web token could not be decoded'):
+                    autolabel(self.pr_handler, self.repo_handler)
 
         # make sure 'Docs' stays in there:
         assert 'Docs' in self.pr_handler.labels
@@ -72,7 +76,9 @@ class TestAutolabel2(AutolabelBase):
         with app.app_context():
             with patch.object(RepoHandler, 'get_all_labels') as p:
                 p.side_effect = self.get_all_labels
-                autolabel(self.pr_handler, self.repo_handler)
+                with pytest.warns(UserWarning,
+                                  match='JSON web token could not be decoded'):
+                    autolabel(self.pr_handler, self.repo_handler)
 
         # make sure 'Docs' stays in there:
         assert 'Docs' in self.pr_handler.labels
