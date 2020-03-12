@@ -48,15 +48,30 @@ def get_subpackage_labels(files, all_labels):
 
             if subpkg:
                 # Consider all possible, cumulative path subsets:
-                for i in range(len(subpkg)):
+                for i in reversed(range(len(subpkg))):
                     # Assume that the subpackage labels for sub-sub packages
                     # contain dots
                     dot_name = '.'.join(subpkg[:i + 1])
+
+                    # Special case: External package
+                    if 'extern' in dot_name:
+                        labels.add('external')
+                        break
 
                     # Only add the label if it exists in the full list of
                     # repository labels
                     if dot_name in all_labels:
                         labels.add(dot_name)
+                        break  # Only grab the deepest-level label
+
+            # Special case: External package
+            if root == 'cextern':
+                labels.add('external')
+            else:
+                # Handle things like "Docs"
+                dot_name = root.capitalize()
+                if dot_name in all_labels:
+                    labels.add(dot_name)
 
     return labels
 

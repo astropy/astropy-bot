@@ -11,7 +11,7 @@ from baldrick.github.github_api import RepoHandler
 class AutolabelBase:
 
     all_labels = ['analytic_functions', 'config', 'constants',
-                  'convolution', 'coordinates', 'cosmology',
+                  'convolution', 'coordinates', 'cosmology', 'Docs',
                   'io.ascii', 'io.fits', 'io.misc', 'io.misc.asdf',
                   'io.registry', 'io.votable', 'modeling', 'nddata',
                   'samp', 'stats', 'table', 'time', 'timeseries',
@@ -23,7 +23,7 @@ class AutolabelBase:
 
         self.pr_handler = MagicMock()
         self.pr_handler.number = 1234
-        self.pr_handler.labels = ['Docs']
+        self.pr_handler.labels = ['Refactoring']
         self.pr_handler.milestone = None
         self.pr_handler.set_labels = self.set_labels
         self.pr_handler.get_modified_files = self.get_modified_files
@@ -43,10 +43,12 @@ class AutolabelBase:
 
 
 class TestAutolabel1(AutolabelBase):
-    files = ['CHANGES.rst', 'astropy/io/fits/convenience.py',
+    files = ['CHANGES.rst',
+             'astropy/coordinates/baseframe.py',
+             'astropy/extern/ply/cpp.py'
+             'astropy/io/fits/convenience.py',
              'astropy/io/fits/fitstime.py',
              'astropy/io/fits/tests/test_fitstime.py',
-             'astropy/coordinates/baseframe.py',
              'astropy/visualization/wcsaxes/coordinate_helpers.py']
 
     def test_autolabel_subpackages(self, app):
@@ -55,17 +57,21 @@ class TestAutolabel1(AutolabelBase):
                 p.side_effect = self.get_all_labels
                 autolabel(self.pr_handler, self.repo_handler)
 
-        # make sure 'Docs' stays in there:
-        assert 'Docs' in self.pr_handler.labels
+        # make sure 'Refactoring' stays in there:
+        assert 'Refactoring' in self.pr_handler.labels
 
         # now check that all the subpackage labels are added:
-        assert 'io.fits' in self.labels
         assert 'coordinates' in self.labels
+        assert 'external' in self.labels
+        assert 'io.fits' in self.labels
         assert 'visualization.wcsaxes' in self.labels
+        assert 'visualization' not in self.labels
 
 
 class TestAutolabel2(AutolabelBase):
     files = ['astropy/io/fits/tests/test_thing.py',
+             'cextern/wcslib/README',
+             'cextern/wcslib/C/getwcstab.c',
              'docs/units/thing.rst']
 
     def test_autolabel_subpackages(self, app):
@@ -74,9 +80,12 @@ class TestAutolabel2(AutolabelBase):
                 p.side_effect = self.get_all_labels
                 autolabel(self.pr_handler, self.repo_handler)
 
-        # make sure 'Docs' stays in there:
-        assert 'Docs' in self.pr_handler.labels
+        # make sure 'Refactoring' stays in there:
+        assert 'Refactoring' in self.pr_handler.labels
 
         # now check that all the subpackage labels are added:
+        assert 'Docs' in self.labels
+        assert 'external' in self.labels
         assert 'io.fits' in self.labels
         assert 'units' in self.labels
+        assert 'wcs' not in self.labels
