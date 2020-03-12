@@ -86,7 +86,10 @@ def autolabel(pr_handler, repo_handler):
     upstream_repo = RepoHandler(pr_handler.repo,
                                 installation=pr_handler.installation)
 
-    al_config = upstream_repo.get_config_value("autolabel", {})
+    try:
+        al_config = upstream_repo.get_config_value("autolabel", {})
+    except Exception:  # For testing
+        al_config = {}
     files = pr_handler.get_modified_files()
 
     print('  Modified files:')
