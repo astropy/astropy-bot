@@ -1,6 +1,6 @@
 [tool.astropy-bot]
 
-[ tool.astropy-bot.milestones ]
+[tool.astropy-bot.milestones]
 
 enabled = true
 
