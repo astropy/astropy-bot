@@ -72,6 +72,9 @@ def autolabel(pr_handler, repo_handler):
                                 installation=pr_handler.installation)
 
     al_config = upstream_repo.get_config_value("autolabel", {})
+    if not al_config.get("enabled", True):
+        print("Skipping PR autolabel, disabled in config.")
+
     files = pr_handler.get_modified_files()
 
     print('  Modified files:')
