@@ -6,7 +6,7 @@ os:
   - linux
 
 python:
-  - "3.6"
+  - "3.8"
 
 env:
   global:
@@ -16,7 +16,7 @@ env:
 install:
   - pip install -r requirements.txt
   - pip install -r requirements_test.txt
-  
+
 script:
   - pytest -rx --flake8 --cov astropy_bot astropy_bot
   - python run.py --skip-run

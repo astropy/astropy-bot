@@ -30,6 +30,7 @@ class AutolabelBase:
 
         self.repo_handler = MagicMock()
         self.repo_handler.get_all_labels = self.get_all_labels
+        self.repo_handler.get_config_value = self.get_config_value
 
     # Patched methods:
     def get_modified_files(self):
@@ -41,6 +42,9 @@ class AutolabelBase:
     def set_labels(self, labels):
         self.labels = labels
 
+    def get_config_value(self, *args, **kwargs):
+        return {}
+
 
 class TestAutolabel1(AutolabelBase):
     files = ['CHANGES.rst', 'astropy/io/fits/convenience.py',
@@ -51,8 +55,9 @@ class TestAutolabel1(AutolabelBase):
 
     def test_autolabel_subpackages(self, app):
         with app.app_context():
-            with patch.object(RepoHandler, 'get_all_labels') as p:
+            with patch.object(RepoHandler, 'get_all_labels') as p, patch.object(RepoHandler, 'get_config_value') as p2:
                 p.side_effect = self.get_all_labels
+                p2.side_effect = self.get_config_value
                 autolabel(self.pr_handler, self.repo_handler)
 
         # make sure 'Docs' stays in there:
@@ -70,8 +75,9 @@ class TestAutolabel2(AutolabelBase):
 
     def test_autolabel_subpackages(self, app):
         with app.app_context():
-            with patch.object(RepoHandler, 'get_all_labels') as p:
+            with patch.object(RepoHandler, 'get_all_labels') as p, patch.object(RepoHandler, 'get_config_value') as p2:
                 p.side_effect = self.get_all_labels
+                p2.side_effect = self.get_config_value
                 autolabel(self.pr_handler, self.repo_handler)
 
         # make sure 'Docs' stays in there:
