@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  schedule:
+    # Weekly Thursday 6AM build
+    # * is a special character in YAML so you have to quote this string
+    - cron: '0 6 * * 4'
+
+env:
+  GITHUB_APP_INTEGRATION_ID: "1234"
+  GITHUB_APP_PRIVATE_KEY: "abcd"
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+    - name: Install
+      run: |
+        pip install -r requirements.txt
+        pip install -r requirements_test.txt
+    - name: Tests
+      run: |
+        pytest -rx --flake8 --cov astropy_bot astropy_bot
+        python run.py --skip-run
+        python -c "from baldrick.config import load; load('pyproject.toml', tool='astropy-bot')"
+    - name: Compute coverage
+      run: coverage xml -o ./coverage.xml
+    - name: Upload coverage to codecov
+      uses: codecov/codecov-action@v1
+      with:
+        file: ./coverage.xml
