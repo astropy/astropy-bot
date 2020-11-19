@@ -6,6 +6,11 @@ from baldrick.plugins.github_pull_requests import pull_request_handler
 @pull_request_handler
 def check_changelog_consistency(pr_handler, repo_handler):
 
+    cl_config = repo_handler.get_config_value("changelog_checker", {})
+    if not cl_config.get("enabled", True):
+        print("Skipping PR changelog check, disabled in config.")
+        return
+
     labels = pr_handler.labels
 
     # Changelog checks manually disabled for this pull request.
@@ -13,7 +18,6 @@ def check_changelog_consistency(pr_handler, repo_handler):
     if 'skip-changelog-checks' in labels:
         return {}
 
-    cl_config = repo_handler.get_config_value("changelog_checker", {})
     filename = cl_config.get("filename", 'CHANGES.rst')
 
     statuses = {}
