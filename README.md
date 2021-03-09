@@ -1,5 +1,5 @@
 [![Build Status](https://github.com/astropy/astropy-bot/workflows/CI/badge.svg)](https://github.com/astropy/astropy-bot/actions)
-[![Coverage Status](https://codecov.io/gh/astropy/astropy-bot/branch/master/graph/badge.svg)](https://codecov.io/gh/astropy/astropy-bot)
+[![Coverage Status](https://codecov.io/gh/astropy/astropy-bot/branch/main/graph/badge.svg)](https://codecov.io/gh/astropy/astropy-bot)
 
 ### About
 
